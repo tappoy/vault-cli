@@ -1,18 +1,18 @@
 # Package
-`github.com/tappoy/vault/cli`
+`github.com/tappoy/vault-cli`
 
 # About
 This vault cli command provides a simple way to interact with `github.com/tappoy/vault` package.
 
 # Installation
 ```bash
-go install github.com/tappoy/vault/cli@latest
+go install github.com/tappoy/vault-cli@latest
 ```
 
 # Usage
 ```
 Usage:
-$ vault command [args] [name]
+$ vault-cli command [args] [name]
 
 The commands are:
   help                       Show this help
