@@ -36,16 +36,16 @@ Arguments:
   password - The password of the vault. It must be 8 to 32 characters.
 
 Environment variables:
-  TAPPOY_VAULT_DIR - The directory of the vault. Default is "/srv".
-  TAPPOY_VAULT_LOG_DIR - The directory of the log. Default is "/var/log".
-  TAPPOY_VAULT_NAME - The name of the vault. Default is "vault".
+  VAULT_DIR - The directory of the vault. Default is "/srv".
+  VAULT_LOG_DIR - The directory of the log. Default is "/var/log".
+  VAULT_NAME - The name of the vault. Default is "vault".
 `, os.Args[0])
 }
 
 func getName(nameIndex int) string {
 	if len(os.Args) > nameIndex {
 		return os.Args[nameIndex]
-	} else if name := os.Getenv("TAPPOY_VAULT_NAME"); name != "" {
+	} else if name := os.Getenv("VAULT_NAME"); name != "" {
 		return name
 	} else {
 		return "vault"
@@ -53,7 +53,7 @@ func getName(nameIndex int) string {
 }
 
 func getVaultDirRoot() string {
-	if dir := os.Getenv("TAPPOY_VAULT_DIR"); dir != "" {
+	if dir := os.Getenv("VAULT_DIR"); dir != "" {
 		return dir
 	} else {
 		return "/srv"
@@ -61,7 +61,7 @@ func getVaultDirRoot() string {
 }
 
 func getLogDirRoot() string {
-	if dir := os.Getenv("TAPPOY_VAULT_LOG_DIR"); dir != "" {
+	if dir := os.Getenv("VAULT_LOG_DIR"); dir != "" {
 		return dir
 	} else {
 		return "/var/log"
@@ -132,11 +132,11 @@ func (o *option) getKey() string {
 // get value
 func (o *option) getValue() string {
 	if o.command == "set" {
-    if len(os.Args) >= 4 {
-      return os.Args[3]
-    } else {
-      return ""
-    }
+		if len(os.Args) >= 4 {
+			return os.Args[3]
+		} else {
+			return ""
+		}
 	} else {
 		panic("Something wrong")
 	}
@@ -178,17 +178,17 @@ func main() {
 	// create vault
 	v, err := vault.NewVault(o.password, o.getVaultDir())
 	if err != nil {
-    switch err {
-    case vault.ErrInvalidPasswordLength, vault.ErrInvalidPassword:
-      msg := fmt.Sprintf("Wrong password.")
-      fmt.Println(msg)
-      o.logger.Notice(msg)
-    default:
-      msg := fmt.Sprintf("Cannot open vault %v [%s]", err, o.getVaultDir())
-      fmt.Println(msg)
-      o.logger.Info(msg)
-    }
-    os.Exit(1)
+		switch err {
+		case vault.ErrInvalidPasswordLength, vault.ErrInvalidPassword:
+			msg := fmt.Sprintf("Wrong password.")
+			fmt.Println(msg)
+			o.logger.Notice(msg)
+		default:
+			msg := fmt.Sprintf("Cannot open vault %v [%s]", err, o.getVaultDir())
+			fmt.Println(msg)
+			o.logger.Info(msg)
+		}
+		os.Exit(1)
 	}
 
 	switch o.command {
@@ -218,13 +218,13 @@ func (o *option) init(v *vault.Vault) {
 		os.Exit(1)
 	}
 
-  err = v.Init()
-  if err != nil {
-    msg := fmt.Sprintf("Cannot init vault %v [%s]", err, o.getVaultDir())
-    fmt.Println(msg)
-    o.logger.Notice(msg)
-    os.Exit(1)
-  }
+	err = v.Init()
+	if err != nil {
+		msg := fmt.Sprintf("Cannot init vault %v [%s]", err, o.getVaultDir())
+		fmt.Println(msg)
+		o.logger.Notice(msg)
+		os.Exit(1)
+	}
 
 	msg := fmt.Sprintf("Init vault %s", o.getVaultDir())
 	fmt.Println(msg)
@@ -235,13 +235,13 @@ func (o *option) set(v *vault.Vault) {
 	key := o.getKey()
 	value := o.getValue()
 
-  // check if the vault is initialized
-  if !v.IsInitialized() {
-    msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
-    fmt.Println(msg)
-    o.logger.Info(msg)
-    os.Exit(1)
-  }
+	// check if the vault is initialized
+	if !v.IsInitialized() {
+		msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
+		fmt.Println(msg)
+		o.logger.Info(msg)
+		os.Exit(1)
+	}
 
 	if err := v.Set(key, value); err != nil {
 		msg := fmt.Sprintf("Cannot set key '%s' '%v'", key, err)
@@ -259,26 +259,26 @@ func (o *option) get(v *vault.Vault) {
 	key := o.getKey()
 	value, err := v.Get(key)
 
-  // check if the vault is initialized
-  if !v.IsInitialized() {
-    msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
-    fmt.Println(msg)
-    o.logger.Info(msg)
-    os.Exit(1)
-  }
+	// check if the vault is initialized
+	if !v.IsInitialized() {
+		msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
+		fmt.Println(msg)
+		o.logger.Info(msg)
+		os.Exit(1)
+	}
 
 	if err != nil {
-    switch err {
-    case vault.ErrVariableNotFound:
-      msg := fmt.Sprintf("Key '%s' not found", key)
-      fmt.Println(msg)
-      o.logger.Info(msg)
-    default:
-      msg := fmt.Sprintf("Cannot get key '%s' '%v'", key, err)
-      fmt.Println(msg)
-      o.logger.Info(msg)
-    }
-    os.Exit(1)
+		switch err {
+		case vault.ErrVariableNotFound:
+			msg := fmt.Sprintf("Key '%s' not found", key)
+			fmt.Println(msg)
+			o.logger.Info(msg)
+		default:
+			msg := fmt.Sprintf("Cannot get key '%s' '%v'", key, err)
+			fmt.Println(msg)
+			o.logger.Info(msg)
+		}
+		os.Exit(1)
 	}
 
 	msg := fmt.Sprintf("Get key %s", key)
