@@ -28,9 +28,9 @@ Arguments:
   password - The password of the vault. It must be 8 to 32 characters.
 
 Environment variables:
-  TAPPOY_VAULT_DIR - The directory of the vault. Default is `/srv`.
-  TAPPOY_VAULT_LOG_DIR - The directory of the log. Default is `/var/log`.
-  TAPPOY_VAULT_NAME - The name of the vault. Default is `vault`.
+  VAULT_DIR - The directory of the vault. Default is `/srv`.
+  VAULT_LOG_DIR - The directory of the log. Default is `/var/log`.
+  VAULT_NAME - The name of the vault. Default is `vault`.
 ```
 
 # License
