@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/tappoy/logger"
-	"github.com/tappoy/pwinput"
 	"github.com/tappoy/vault"
 	"os"
 	"path/filepath"
@@ -110,7 +109,7 @@ func (o *option) getVaultDir() string {
 // get password
 func (o *option) getPassword() error {
 	fmt.Print("Password: ")
-  pwi := pwinput.NewPasswordInput()
+	pwi := newPasswordInput()
 	password, err := pwi.InputPassword()
 	fmt.Print("\n")
 	if err != nil {
