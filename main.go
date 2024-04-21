@@ -110,7 +110,8 @@ func (o *option) getVaultDir() string {
 // get password
 func (o *option) getPassword() error {
 	fmt.Print("Password: ")
-	password, err := pwinput.ReadPassword()
+  pwi := pwinput.NewPasswordInput()
+	password, err := pwi.InputPassword()
 	fmt.Print("\n")
 	if err != nil {
 		return err
