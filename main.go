@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/tappoy/logger"
-	"github.com/tappoy/pwinput"
 	"github.com/tappoy/vault"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type option struct {
@@ -40,13 +40,14 @@ Environment variables:
   VAULT_LOG_DIR - The directory of the log. Default is "/var/log".
   VAULT_NAME - The name of the vault. Default is "vault".
 `, os.Args[0])
+	os.Exit(0)
 }
 
 func getName(nameIndex int) string {
 	if len(os.Args) > nameIndex {
 		return os.Args[nameIndex]
-	} else if name := os.Getenv("VAULT_NAME"); name != "" {
-		return name
+	} else if name := os.Getenv("VAULT_NAME"); strings.TrimSpace(name) != "" {
+		return strings.TrimSpace(name)
 	} else {
 		return "vault"
 	}
@@ -110,7 +111,8 @@ func (o *option) getVaultDir() string {
 // get password
 func (o *option) getPassword() error {
 	fmt.Print("Password: ")
-	password, err := pwinput.ReadPassword()
+	pwi := newPasswordInput()
+	password, err := pwi.InputPassword()
 	fmt.Print("\n")
 	if err != nil {
 		return err
