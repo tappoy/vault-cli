@@ -1,5 +1,5 @@
-github.com/tappoy/logger v1.6.0 h1:pKKVsS2SkV8oKP4+0FNqJfipYymrNpi5UPHQ+cQ3+XU=
-github.com/tappoy/logger v1.6.0/go.mod h1:5XDuyu3l8ktLVFgWyRuNZfbiP5FYe+NyfQJOan0Xvck=
+github.com/tappoy/logger v1.6.1 h1:uWMUE+jSAgdQq6qYKZJxZ33mnpm++AjJUZutK5qtqNc=
+github.com/tappoy/logger v1.6.1/go.mod h1:5XDuyu3l8ktLVFgWyRuNZfbiP5FYe+NyfQJOan0Xvck=
 github.com/tappoy/pwinput v1.1.0 h1:xs4ihJxWNNllCy7Cf1D+tjn0pB1De6TnaUaFydTiBrU=
 github.com/tappoy/pwinput v1.1.0/go.mod h1:boa4zl7hsQQ6yZvYMNK7oEuGoCY1aQU+hqC5KvATHY0=
 github.com/tappoy/vault v0.0.4 h1:J+9e74Ytt6+vrvkjp9FR3uG69++49n54bf9RFMc0Lok=
