@@ -1,9 +1,11 @@
-github.com/tappoy/logger v1.6.1 h1:uWMUE+jSAgdQq6qYKZJxZ33mnpm++AjJUZutK5qtqNc=
-github.com/tappoy/logger v1.6.1/go.mod h1:5XDuyu3l8ktLVFgWyRuNZfbiP5FYe+NyfQJOan0Xvck=
-github.com/tappoy/pwinput v1.1.0 h1:xs4ihJxWNNllCy7Cf1D+tjn0pB1De6TnaUaFydTiBrU=
-github.com/tappoy/pwinput v1.1.0/go.mod h1:boa4zl7hsQQ6yZvYMNK7oEuGoCY1aQU+hqC5KvATHY0=
-github.com/tappoy/vault v0.0.4 h1:J+9e74Ytt6+vrvkjp9FR3uG69++49n54bf9RFMc0Lok=
-github.com/tappoy/vault v0.0.4/go.mod h1:rbLlwl2FSQBt0DtOuL+bMMtulPgTLyAvRL54IRaQg0M=
+github.com/tappoy/crypto v1.1.0 h1:Y7nZBgL6kU/9PQ9z/LpJXFhlQdwTN1SDjvFkxDJjuls=
+github.com/tappoy/crypto v1.1.0/go.mod h1:bIRaKMbqdSIkJCoei1HW6+HgN2CF2J9pDPhBEUrXZLI=
+github.com/tappoy/logger v1.7.0 h1:El0L1H9bqXY6ybqm2ey+a761mW9d7og+bSS6qmqEfB0=
+github.com/tappoy/logger v1.7.0/go.mod h1:5XDuyu3l8ktLVFgWyRuNZfbiP5FYe+NyfQJOan0Xvck=
+github.com/tappoy/pwinput v1.1.1 h1:2Dt47rP94H+IEYRTWDJUwz6wtJWU2GixApUXzFKPAK8=
+github.com/tappoy/pwinput v1.1.1/go.mod h1:boa4zl7hsQQ6yZvYMNK7oEuGoCY1aQU+hqC5KvATHY0=
+github.com/tappoy/vault v1.1.0 h1:zkbXYWipVFDc6LsAJRGBTFEgO+hSKRawjkEFyAfEM94=
+github.com/tappoy/vault v1.1.0/go.mod h1:UG0OsSLGI0mSxj3i825mfWLH3F6wwzG1Q9KPNLSqxxs=
 golang.org/x/crypto v0.22.0 h1:g1v0xeRhjcugydODzvb3mEM9SQ0HGp9s/nh3COQ/C30=
 golang.org/x/crypto v0.22.0/go.mod h1:vr6Su+7cTlO45qkww3VDJlzDn0ctJvRgYbC2NvXHt+M=
 golang.org/x/sys v0.19.0 h1:q5f1RH2jigJ1MoAWp2KTp3gm5zAGFUTarQZ5U386+4o=
