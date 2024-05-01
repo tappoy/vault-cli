@@ -9,12 +9,23 @@ import (
 	"strings"
 )
 
+var (
+	VERSION  = "VERSION"
+	REVISION = "REVISION"
+)
+
 type option struct {
 	command      string
 	name         string
 	password     string
 	vaultDirRoot string
 	logger       *logger.Logger
+}
+
+// print version
+func version() {
+	fmt.Printf("vault-cli version %s (%s)\n", VERSION, REVISION)
+	os.Exit(0)
 }
 
 // print usage
@@ -28,6 +39,7 @@ The commands are:
   set <key> <value> [name]   Set a key-value pair
   get <key> [name]           Get a value by key
   info [name]                Show information of the vault
+  version                    Show version
 
 You must give a password through the prompt when init, set and get.
 
@@ -75,6 +87,8 @@ func newOptions(command string) *option {
 	switch command {
 	case "help":
 		usage()
+	case "version":
+		version()
 	case "init", "info":
 		name = getName(2)
 	case "set":

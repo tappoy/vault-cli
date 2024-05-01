@@ -1,3 +1,7 @@
+VERSION=$(shell cat VERSION)
+REVISION=$(shell git rev-parse --short HEAD)
+LDFLAGS:='-X main.VERSION=${VERSION} -X main.REVISION=${REVISION}'
+
 WORKING_DIRS=tmp
 
 SRC=$(shell find . -name "*.go")
@@ -20,8 +24,8 @@ $(WORKING_DIRS):
 $(FMT): $(SRC)
 	go fmt ./... > $(FMT) 2>&1 || true
 
-$(BIN): $(SRC)
-	go build -o $(BIN)
+$(BIN): $(SRC) VERSION
+	go build -ldflags $(LDFLAGS) -o $(BIN)
 
 $(TESTBIN): $(SRC)
 	go build -tags test -o $(TESTBIN)
