@@ -27,8 +27,8 @@ $(FMT): $(SRC)
 $(BIN): $(SRC) VERSION
 	go build -ldflags $(LDFLAGS) -o $(BIN)
 
-$(TESTBIN): $(SRC)
-	go build -tags test -o $(TESTBIN)
+$(TESTBIN): $(BIN)
+	go build -ldflags $(LDFLAGS) -tags test -o $(TESTBIN)
 
 $(TEST): $(TESTBIN)
 	go test -v -tags=mock -cover -coverprofile=$(TEST) ./...
