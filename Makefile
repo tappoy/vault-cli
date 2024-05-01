@@ -1,17 +1,33 @@
+WORKING_DIRS=tmp
+
 SRC=$(shell find . -name "*.go")
-BIN=bin/$(shell basename $(CURDIR))
-TESTBIN=bin/$(shell basename $(CURDIR))-test
+BIN=tmp/$(shell basename $(CURDIR))
+TESTBIN=tmp/$(shell basename $(CURDIR))-test
 
-all: fmt test build
+FMT=tmp/fmt
+TEST=tmp/cover
 
-fmt:
-	go fmt ./...
+.PHONY: all clean cover
 
-build: $(SRC)
+all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST) $(DOC)
+
+clean:
+	rm -rf $(WORKING_DIRS)
+
+$(WORKING_DIRS):
+	mkdir -p $(WORKING_DIRS)
+
+$(FMT): $(SRC)
+	go fmt ./... > $(FMT) 2>&1 || true
+
+$(BIN): $(SRC)
 	go build -o $(BIN)
 
-build-test: $(SRC)
+$(TESTBIN): $(SRC)
 	go build -tags test -o $(TESTBIN)
 
-test: build-test
-	go test -v ./...
+$(TEST): $(TESTBIN)
+	go test -v -tags=mock -cover -coverprofile=$(TEST) ./...
+
+cover: $(TEST)
+	grep "0$$" $(TEST) || true

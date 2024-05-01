@@ -11,7 +11,7 @@ import (
 var (
 	testDataDir = "./test_dst/data"
 	testLogDir  = "./test_dst/log"
-	testbin     = "./bin/vault-cli-test"
+	testbin     = "./tmp/vault-cli-test"
 )
 
 func TestMain(m *testing.M) {
