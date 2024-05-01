@@ -7,11 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-)
 
-var (
-	VERSION  = "VERSION"
-	REVISION = "REVISION"
+	"runtime/debug"
 )
 
 type option struct {
@@ -24,7 +21,12 @@ type option struct {
 
 // print version
 func version() {
-	fmt.Printf("vault-cli version %s (%s)\n", VERSION, REVISION)
+	v, ok := debug.ReadBuildInfo()
+	if !ok {
+		fmt.Printf("Cannot read build info\n")
+		os.Exit(1)
+	}
+	fmt.Printf("vault-cli version %s\n", v.Main.Version)
 	os.Exit(0)
 }
 

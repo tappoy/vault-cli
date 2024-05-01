@@ -1,7 +1,3 @@
-VERSION=$(shell cat VERSION)
-REVISION=$(shell git rev-parse --short HEAD)
-LDFLAGS:='-s -w -X main.VERSION=${VERSION} -X main.REVISION=${REVISION}'
-
 WORKING_DIRS=tmp
 
 SRC=$(shell find . -name "*.go")
@@ -24,11 +20,11 @@ $(WORKING_DIRS):
 $(FMT): $(SRC)
 	go fmt ./... > $(FMT) 2>&1 || true
 
-$(BIN): $(SRC) VERSION
-	go build -ldflags $(LDFLAGS) -trimpath -o $(BIN)
+$(BIN): $(SRC)
+	go build -o $(BIN)
 
 $(TESTBIN): $(BIN)
-	go build -ldflags $(LDFLAGS) -tags test -o $(TESTBIN)
+	go build -tags test -o $(TESTBIN)
 
 $(TEST): $(TESTBIN)
 	go test -v -tags=mock -cover -coverprofile=$(TEST) ./...
