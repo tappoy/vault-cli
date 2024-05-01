@@ -20,6 +20,7 @@ The commands are:
   set <key> <value> [name]   Set a key-value pair
   get <key> [name]           Get a value by key
   info [name]                Show information of the vault
+  version                    Show version
 
 You must give a password through the prompt when init, set and get.
 
