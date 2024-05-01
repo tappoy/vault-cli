@@ -1,6 +1,6 @@
 VERSION=$(shell cat VERSION)
 REVISION=$(shell git rev-parse --short HEAD)
-LDFLAGS:='-X main.VERSION=${VERSION} -X main.REVISION=${REVISION}'
+LDFLAGS:='-s -w -X main.VERSION=${VERSION} -X main.REVISION=${REVISION}'
 
 WORKING_DIRS=tmp
 
@@ -25,7 +25,7 @@ $(FMT): $(SRC)
 	go fmt ./... > $(FMT) 2>&1 || true
 
 $(BIN): $(SRC) VERSION
-	go build -ldflags $(LDFLAGS) -o $(BIN)
+	go build -ldflags $(LDFLAGS) -trimpath -o $(BIN)
 
 $(TESTBIN): $(BIN)
 	go build -ldflags $(LDFLAGS) -tags test -o $(TESTBIN)
