@@ -181,7 +181,7 @@ func main() {
 	v, err := vault.NewVault(o.password, o.getVaultDir())
 	if err != nil {
 		switch err {
-		case vault.ErrInvalidPasswordLength, vault.ErrInvalidPassword:
+		case vault.ErrInvalidPasswordLength, vault.ErrPasswordIncorrect:
 			msg := fmt.Sprintf("Wrong password.")
 			fmt.Println(msg)
 			o.logger.Notice(msg)
