@@ -281,7 +281,7 @@ func (o *option) get(v *vault.Vault) {
 
 	if err != nil {
 		switch err {
-		case vault.ErrVariableNotFound:
+		case vault.ErrKeyNotFound:
 			msg := fmt.Sprintf("Key '%s' not found", key)
 			fmt.Println(msg)
 			o.logger.Info(msg)
