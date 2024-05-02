@@ -7,7 +7,7 @@ TESTBIN=tmp/$(shell basename $(CURDIR))-test
 FMT=tmp/fmt
 TEST=tmp/cover
 
-.PHONY: all clean cover
+.PHONY: all clean cover test
 
 all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST) $(DOC)
 
