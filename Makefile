@@ -20,13 +20,16 @@ $(WORKING_DIRS):
 $(FMT): $(SRC)
 	go fmt ./... > $(FMT) 2>&1 || true
 
-$(BIN): $(SRC)
+$(BIN): $(SRC) go.mod go.sum
 	go build -o $(BIN)
 
 $(TESTBIN): $(BIN)
 	go build -tags test -o $(TESTBIN)
 
 $(TEST): $(TESTBIN)
+	make test
+
+test:
 	go test -v -tags=mock -cover -coverprofile=$(TEST) ./...
 
 cover: $(TEST)
