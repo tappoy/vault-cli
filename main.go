@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/tappoy/logger"
 	"github.com/tappoy/vault"
+	ver "github.com/tappoy/version"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"runtime/debug"
 )
 
 type option struct {
@@ -21,12 +20,7 @@ type option struct {
 
 // print version
 func version() {
-	v, ok := debug.ReadBuildInfo()
-	if !ok {
-		fmt.Printf("Cannot read build info\n")
-		os.Exit(1)
-	}
-	fmt.Printf("vault-cli version %s\n", v.Main.Version)
+	fmt.Printf("vault-cli version %s\n", ver.Version())
 	os.Exit(0)
 }
 
