@@ -27,8 +27,8 @@ go.sum: go.mod
 $(BIN): $(SRC) go.sum
 	go build -o $(BIN)
 
-$(USAGE): $(BIN)
-	$(BIN) help > $(USAGE)
+# $(USAGE): $(BIN)
+# 	$(BIN) help > $(USAGE)
 
 $(TESTBIN): $(BIN)
 	go build -tags test -o $(TESTBIN)
