@@ -28,7 +28,7 @@ $(BIN): $(SRC) go.sum
 	go build -o $(BIN)
 
 $(USAGE): $(BIN)
- 	$(BIN) > $(USAGE)
+	$(BIN) > $(USAGE)
 
 $(TESTBIN): $(BIN)
 	go build -tags test -o $(TESTBIN)
