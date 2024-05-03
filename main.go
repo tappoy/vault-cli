@@ -295,8 +295,6 @@ func (o *option) get(v *vault.Vault) {
 func (o *option) delete(v *vault.Vault) {
 	key := o.getKey()
 
-	fmt.Println("delete key:", key)
-
 	// check if the vault is initialized
 	if !v.IsInitialized() {
 		msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
