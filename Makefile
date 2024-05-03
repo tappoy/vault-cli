@@ -37,7 +37,7 @@ $(TEST): $(TESTBIN)
 	make test
 
 test:
-	go test -v -tags=mock -cover -coverprofile=$(TEST) ./...
+	go test -v -tags=test -cover -coverprofile=$(TEST) ./...
 
 cover: $(TEST)
 	grep "0$$" $(TEST) || true
