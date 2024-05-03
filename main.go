@@ -104,7 +104,7 @@ func newOptions(command string) *option {
 	logDir := filepath.Join(getLogDirRoot(), name)
 	logger, err := logger.NewLogger(logDir)
 	if err != nil {
-		fmt.Printf("Cannot create logger '%s' %v\n", logDir, err)
+		fmt.Printf("Cannot create logger.\tlogDir:%s\terror:%v\n", logDir, err)
 		return nil
 	}
 
@@ -166,7 +166,7 @@ func main() {
 
 	// get password
 	if err := o.getPassword(); err != nil {
-		msg := fmt.Sprintf("Cannot get password %v", err)
+		msg := fmt.Sprintf("Cannot get password.\terror:%v", err)
 		fmt.Println(msg)
 		o.logger.Info(msg)
 		os.Exit(1)
@@ -181,7 +181,7 @@ func main() {
 			fmt.Println(msg)
 			o.logger.Notice(msg)
 		default:
-			msg := fmt.Sprintf("Cannot open vault %v [%s]", err, o.getVaultDir())
+			msg := fmt.Sprintf("Cannot open vault.\terror:%v\tvaultDir:%s", err, o.getVaultDir())
 			fmt.Println(msg)
 			o.logger.Info(msg)
 		}
@@ -207,11 +207,11 @@ func (o *option) init(v *vault.Vault) {
 		body := ""
 		switch err {
 		case vault.ErrInvalidPasswordLength:
-			body = fmt.Sprintf("password length must be 8 to 32 characters (length:%d)", len(o.password))
+			body = fmt.Sprintf("password length must be 8 to 32 characters.\tlength:%d", len(o.password))
 		default:
-			body = fmt.Sprintf("%v", err)
+			body = fmt.Sprintf("error:%v", err)
 		}
-		header := "Cannot create vault: "
+		header := "Cannot create vault. "
 		fmt.Println(header + body)
 		o.logger.Notice(header + body)
 		os.Exit(1)
@@ -219,13 +219,13 @@ func (o *option) init(v *vault.Vault) {
 
 	err = v.Init()
 	if err != nil {
-		msg := fmt.Sprintf("Cannot init vault %v [%s]", err, o.getVaultDir())
+		msg := fmt.Sprintf("Cannot init vault.\terror:%v\tvaultDir:%s", err, o.getVaultDir())
 		fmt.Println(msg)
 		o.logger.Notice(msg)
 		os.Exit(1)
 	}
 
-	msg := fmt.Sprintf("Init vault %s", o.getVaultDir())
+	msg := fmt.Sprintf("Init vault.\tvaultDir:%s", o.getVaultDir())
 	fmt.Println(msg)
 	o.logger.Notice(msg)
 }
@@ -242,22 +242,23 @@ func (o *option) set(v *vault.Vault) {
 
 	// check if the vault is initialized
 	if !v.IsInitialized() {
-		msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
+		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.getVaultDir())
 		fmt.Println(msg)
 		o.logger.Info(msg)
 		os.Exit(1)
 	}
 
 	if err := v.Set(key, value); err != nil {
-		msg := fmt.Sprintf("Cannot set key '%s' '%v'", key, err)
+		msg := fmt.Sprintf("Cannot set.\tkey:%s\terror:%v", key, err)
 		fmt.Println(msg)
 		o.logger.Info(msg)
 		os.Exit(1)
 	}
 
-	msg := fmt.Sprintf("Set key %s", key)
-	fmt.Println(msg)
+	msg := fmt.Sprintf("set\tkey:%s", key)
 	o.logger.Info(msg)
+
+	fmt.Println("Set successfully.")
 }
 
 func (o *option) get(v *vault.Vault) {
@@ -266,7 +267,7 @@ func (o *option) get(v *vault.Vault) {
 
 	// check if the vault is initialized
 	if !v.IsInitialized() {
-		msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
+		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.getVaultDir())
 		fmt.Println(msg)
 		o.logger.Info(msg)
 		os.Exit(1)
@@ -275,18 +276,18 @@ func (o *option) get(v *vault.Vault) {
 	if err != nil {
 		switch err {
 		case vault.ErrKeyNotFound:
-			msg := fmt.Sprintf("Key '%s' not found", key)
+			msg := fmt.Sprintf("Not found.\tkey:%s", key)
 			fmt.Println(msg)
 			o.logger.Info(msg)
 		default:
-			msg := fmt.Sprintf("Cannot get key '%s' '%v'", key, err)
+			msg := fmt.Sprintf("Cannot get.\tkey:%s error:%v", key, err)
 			fmt.Println(msg)
 			o.logger.Info(msg)
 		}
 		os.Exit(1)
 	}
 
-	msg := fmt.Sprintf("Get key %s", key)
+	msg := fmt.Sprintf("get\tkey:%s", key)
 	o.logger.Info(msg)
 
 	fmt.Println(value)
@@ -297,20 +298,21 @@ func (o *option) delete(v *vault.Vault) {
 
 	// check if the vault is initialized
 	if !v.IsInitialized() {
-		msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
+		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.getVaultDir())
 		fmt.Println(msg)
 		o.logger.Info(msg)
 		os.Exit(1)
 	}
 
 	if err := v.Delete(key); err != nil {
-		msg := fmt.Sprintf("Cannot delete key '%s' '%v'", key, err)
+		msg := fmt.Sprintf("Cannot delete.\tkey:%s\terror:%v", key, err)
 		fmt.Println(msg)
 		o.logger.Info(msg)
 		os.Exit(1)
 	}
 
-	msg := fmt.Sprintf("Delete key %s", key)
-	fmt.Println(msg)
+	msg := fmt.Sprintf("delete\tkey:%s", key)
 	o.logger.Info(msg)
+
+	fmt.Printf("%s is deleted.\n", key)
 }
