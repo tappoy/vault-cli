@@ -12,6 +12,10 @@ TEST=tmp/cover
 
 all: $(WORKING_DIRS) $(FMT) $(BIN) $(USAGE) $(TEST)
 
+# Workaround. I don't know why,
+# but the $(USAGE) target is not working in github actions.
+actions: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST)
+
 clean:
 	rm -rf $(WORKING_DIRS)
 
