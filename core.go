@@ -60,7 +60,7 @@ func (o *option) run() int {
 		return 0
 	}
 
-  // TODO: name should be set by -name option
+	// TODO: name should be set by -name option
 	if o.name == "" {
 		fmt.Fprintf(o.w, "Argument error. Run %s help\n", o.args[0])
 		return 1
