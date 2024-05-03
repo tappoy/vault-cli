@@ -18,5 +18,6 @@ func main() {
 		os.Exit(rc)
 	}
 
+	// run command
 	os.Exit(o.run())
 }
