@@ -10,7 +10,8 @@ TEST=tmp/cover
 
 .PHONY: all clean cover test
 
-all: $(WORKING_DIRS) $(FMT) $(BIN) $(USAGE) $(TEST)
+# all: $(WORKING_DIRS) $(FMT) $(BIN) $(USAGE) $(TEST)
+all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST)
 
 clean:
 	rm -rf $(WORKING_DIRS)
