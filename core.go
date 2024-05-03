@@ -60,6 +60,7 @@ func (o *option) run() int {
 		return 0
 	}
 
+  // TODO: name should be set by -name option
 	if o.name == "" {
 		fmt.Fprintf(o.w, "Argument error. Run %s help\n", o.args[0])
 		return 1
@@ -109,6 +110,7 @@ func (o *option) run() int {
 	case "delete":
 		return o.delete(v)
 	default:
+		fmt.Fprintf(o.w, "Unknown command. Run %s help\n", o.args[0])
 		return 1
 	}
 }
