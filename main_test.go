@@ -9,19 +9,19 @@ import (
 )
 
 var (
-	testDataDir = "./test_dst/data"
-	testLogDir  = "./test_dst/log"
+	testDir     = "./tmp/test_dst"
+	testDataDir = "./tmp/test_dst/data"
+	testLogDir  = "./tmp/test_dst/log"
 	testbin     = "./tmp/vault-cli-test"
 )
 
-func rmTestData() {
-	exec.Command("rm", "-rf", testDataDir).Run()
-	exec.Command("rm", "-rf", testLogDir).Run()
+func clean() {
+	exec.Command("rm", "-rf", testDir).Run()
 }
 
 func TestMain(m *testing.M) {
-	// remove test data
-	rmTestData()
+	// clean up
+	clean()
 
 	// set env
 	os.Setenv("VAULT_DIR", testDataDir)
@@ -47,9 +47,6 @@ func testInfo(t *testing.T, name string) {
 }
 
 func TestDefaultName(t *testing.T) {
-	// remove test data
-	rmTestData()
-
 	name := ""
 	testInfo(t, name)
 	testInit(t, name)
@@ -58,9 +55,6 @@ func TestDefaultName(t *testing.T) {
 }
 
 func TestNamedVault(t *testing.T) {
-	// remove test data
-	rmTestData()
-
 	name := "test"
 	testInfo(t, name)
 	testInit(t, name)
@@ -144,6 +138,7 @@ func testSetAndGet(t *testing.T, name string) {
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
+	fmt.Println(string(output))
 
 	if !strings.Contains(string(output), "TestSetAndGet") {
 		t.Errorf("Error: %v", string(output))
