@@ -10,8 +10,7 @@ TEST=tmp/cover
 
 .PHONY: all clean cover test
 
-# all: $(WORKING_DIRS) $(FMT) $(BIN) $(USAGE) $(TEST)
-all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST)
+all: $(WORKING_DIRS) $(FMT) $(BIN) $(USAGE) $(TEST)
 
 clean:
 	rm -rf $(WORKING_DIRS)
@@ -28,8 +27,8 @@ go.sum: go.mod
 $(BIN): $(SRC) go.sum
 	go build -o $(BIN)
 
-# $(USAGE): $(BIN)
-# 	$(BIN) help > $(USAGE)
+$(USAGE): $(BIN)
+ 	$(BIN) > $(USAGE)
 
 $(TESTBIN): $(BIN)
 	go build -tags test -o $(TESTBIN)
