@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/tappoy/logger"
+	"github.com/tappoy/pwinput"
 	"github.com/tappoy/vault"
 	ver "github.com/tappoy/version"
 
@@ -15,9 +16,11 @@ type option struct {
 	name         string
 	password     string
 	vaultDirRoot string
+	logDir       string
 	logger       *logger.Logger
 	w            io.Writer
 	args         []string
+	pwi          pwinput.PasswordInput
 }
 
 func (o *option) getVaultDir() string {
@@ -27,8 +30,7 @@ func (o *option) getVaultDir() string {
 // get password
 func (o *option) getPassword() error {
 	fmt.Print("Password: ")
-	pwi := newPasswordInput()
-	password, err := pwi.InputPassword()
+	password, err := o.pwi.InputPassword()
 	fmt.Print("\n")
 	if err != nil {
 		return err
@@ -44,6 +46,13 @@ func (o *option) getKey() string {
 }
 
 func (o *option) run() int {
+	logger, err := logger.NewLogger(o.logDir)
+	if err != nil {
+		fmt.Fprintf(o.w, "Cannot create logger.\tlogDir:%s\terror:%v\n", o.logDir, err)
+		return 1
+	}
+	o.logger = logger
+
 	switch o.command {
 	case "help":
 		o.usage()

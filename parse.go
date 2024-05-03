@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"github.com/tappoy/logger"
 	"io"
 	"path/filepath"
 	"strings"
@@ -60,19 +58,16 @@ func newOptions(e env, args []string, w io.Writer) (*option, int) {
 	}
 
 	logDir := filepath.Join(getLogDirRoot(e), name)
-	logger, err := logger.NewLogger(logDir)
-	if err != nil {
-		fmt.Fprintf(w, "Cannot create logger.\tlogDir:%s\terror:%v\n", logDir, err)
-		return nil, 1
-	}
 
 	return &option{
 		command:      command,
 		name:         name,
 		password:     "",
 		vaultDirRoot: getVaultDirRoot(e),
-		logger:       logger,
+		logDir:       logDir,
+		logger:       nil,
 		w:            w,
 		args:         args,
+		pwi:          newPasswordInput(),
 	}, 0
 }
