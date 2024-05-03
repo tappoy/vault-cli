@@ -8,6 +8,7 @@ The commands are:
   get <key> [name]           Get a value by key
   delete <key> [name]        Delete a key-value pair
   info [name]                Show information of the vault
+  genpw                      Generate a random password
   version                    Show version
 
 You must give a password through the prompt when init, set, get and delete.
