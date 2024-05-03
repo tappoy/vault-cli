@@ -27,7 +27,7 @@ func version() {
 // print usage
 func usage() {
 	fmt.Printf(`Usage:
-$ %s command [args] [name]
+$ vault-cli command [args] [name]
 
 The commands are:
   help                       Show this help
@@ -48,7 +48,7 @@ Environment variables:
   VAULT_DIR - The directory of the vault. Default is "/srv".
   VAULT_LOG_DIR - The directory of the log. Default is "/var/log".
   VAULT_NAME - The name of the vault. Default is "vault".
-`, os.Args[0])
+`)
 	os.Exit(0)
 }
 

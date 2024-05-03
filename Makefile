@@ -3,13 +3,14 @@ WORKING_DIRS=tmp
 SRC=$(shell find . -name "*.go")
 BIN=tmp/$(shell basename $(CURDIR))
 TESTBIN=tmp/$(shell basename $(CURDIR))-test
+USAGE=Usage.txt
 
 FMT=tmp/fmt
 TEST=tmp/cover
 
 .PHONY: all clean cover test
 
-all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST) $(DOC)
+all: $(WORKING_DIRS) $(FMT) $(BIN) $(USAGE) $(TEST)
 
 clean:
 	rm -rf $(WORKING_DIRS)
@@ -25,6 +26,9 @@ go.sum: go.mod
 
 $(BIN): $(SRC) go.sum
 	go build -o $(BIN)
+
+$(USAGE): $(BIN)
+	$(BIN) help > $(USAGE)
 
 $(TESTBIN): $(BIN)
 	go build -tags test -o $(TESTBIN)
