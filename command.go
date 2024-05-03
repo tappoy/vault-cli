@@ -8,23 +8,18 @@ import (
 
 	"fmt"
 	"io"
-	"path/filepath"
 )
 
 type option struct {
-	command      string
-	name         string
-	password     string
-	vaultDirRoot string
-	logDir       string
-	logger       *logger.Logger
-	w            io.Writer
-	args         []string
-	pwi          pwinput.PasswordInput
-}
-
-func (o *option) getVaultDir() string {
-	return filepath.Join(o.vaultDirRoot, o.name)
+	command  string
+	name     string
+	password string
+	vaultDir string
+	logDir   string
+	logger   *logger.Logger
+	w        io.Writer
+	args     []string
+	pwi      pwinput.PasswordInput
 }
 
 // get password
@@ -74,9 +69,9 @@ func (o *option) run() int {
 	if o.command == "info" {
 		fmt.Fprintln(o.w, "[Vault Info]")
 		fmt.Fprintln(o.w, "  name:", o.name)
-		fmt.Fprintln(o.w, "  data:", o.getVaultDir())
+		fmt.Fprintln(o.w, "  data:", o.vaultDir)
 		fmt.Fprintln(o.w, "  log :", o.logger.GetLogDir())
-		fmt.Fprintln(o.w, "  init:", vault.IsInitialized(o.getVaultDir()))
+		fmt.Fprintln(o.w, "  init:", vault.IsInitialized(o.vaultDir))
 		return 0
 	}
 
@@ -89,7 +84,7 @@ func (o *option) run() int {
 	}
 
 	// create vault
-	v, err := vault.NewVault(o.password, o.getVaultDir())
+	v, err := vault.NewVault(o.password, o.vaultDir)
 	if err != nil {
 		switch err {
 		case vault.ErrInvalidPasswordLength, vault.ErrPasswordIncorrect:
@@ -97,7 +92,7 @@ func (o *option) run() int {
 			fmt.Fprintln(o.w, msg)
 			o.logger.Notice(msg)
 		default:
-			msg := fmt.Sprintf("Cannot open vault.\terror:%v\tvaultDir:%s", err, o.getVaultDir())
+			msg := fmt.Sprintf("Cannot open vault.\terror:%v\tvaultDir:%s", err, o.vaultDir)
 			fmt.Fprintln(o.w, msg)
 			o.logger.Info(msg)
 		}
@@ -160,7 +155,7 @@ func (o *option) generatePassword() {
 }
 
 func (o *option) init(v *vault.Vault) int {
-	v, err := vault.NewVault(o.password, o.getVaultDir())
+	v, err := vault.NewVault(o.password, o.vaultDir)
 	if err != nil {
 		body := ""
 		switch err {
@@ -177,13 +172,13 @@ func (o *option) init(v *vault.Vault) int {
 
 	err = v.Init()
 	if err != nil {
-		msg := fmt.Sprintf("Cannot init vault.\terror:%v\tvaultDir:%s", err, o.getVaultDir())
+		msg := fmt.Sprintf("Cannot init vault.\terror:%v\tvaultDir:%s", err, o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		o.logger.Notice(msg)
 		return 1
 	}
 
-	msg := fmt.Sprintf("Init vault.\tvaultDir:%s", o.getVaultDir())
+	msg := fmt.Sprintf("Init vault.\tvaultDir:%s", o.vaultDir)
 	fmt.Fprintln(o.w, msg)
 	o.logger.Notice(msg)
 
@@ -202,7 +197,7 @@ func (o *option) set(v *vault.Vault) int {
 
 	// check if the vault is initialized
 	if !v.IsInitialized() {
-		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.getVaultDir())
+		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		o.logger.Info(msg)
 		return 1
@@ -229,7 +224,7 @@ func (o *option) get(v *vault.Vault) int {
 
 	// check if the vault is initialized
 	if !v.IsInitialized() {
-		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.getVaultDir())
+		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		o.logger.Info(msg)
 		return 1
@@ -261,7 +256,7 @@ func (o *option) delete(v *vault.Vault) int {
 
 	// check if the vault is initialized
 	if !v.IsInitialized() {
-		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.getVaultDir())
+		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		o.logger.Info(msg)
 		return 1

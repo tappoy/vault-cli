@@ -43,7 +43,7 @@ func newOptions(e env, args []string, w io.Writer) (*option, int) {
 		args = append(args, "help")
 	}
 
-	name := ""
+	var name string
 
 	command := args[1]
 	switch command {
@@ -55,19 +55,19 @@ func newOptions(e env, args []string, w io.Writer) (*option, int) {
 		name = getName(3, args, e)
 	case "delete":
 		name = getName(3, args, e)
+	default:
+		name = "vault"
 	}
 
-	logDir := filepath.Join(getLogDirRoot(e), name)
-
 	return &option{
-		command:      command,
-		name:         name,
-		password:     "",
-		vaultDirRoot: getVaultDirRoot(e),
-		logDir:       logDir,
-		logger:       nil,
-		w:            w,
-		args:         args,
-		pwi:          newPasswordInput(),
+		command:  command,
+		name:     name,
+		password: "",
+		vaultDir: filepath.Join(getVaultDirRoot(e), name),
+		logDir:   filepath.Join(getLogDirRoot(e), name),
+		logger:   nil,
+		w:        w,
+		args:     args,
+		pwi:      newPasswordInput(),
 	}, 0
 }
