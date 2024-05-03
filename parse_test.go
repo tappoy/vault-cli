@@ -24,11 +24,11 @@ func makeParseTest(command string, e env, wantInt int, want *option) parseTest {
 	}
 }
 
-func test(t *testing.T, tests []parseTest) {
+func checkParse(t *testing.T, tests []parseTest) {
 	w := new(bytes.Buffer)
 	for _, test := range tests {
 		t.Logf("Test: %s", test.command)
-		got, gotInt := newOptions(test.e, test.args, w)
+		got, gotInt := parse(test.e, test.args, w)
 		if gotInt != test.wantInt {
 			t.Errorf("ERROR: got %v, want %v", gotInt, test.wantInt)
 		}
@@ -93,7 +93,7 @@ func TestNewOptionsWithNilEnvNilName(t *testing.T) {
 		}),
 	}
 
-	test(t, tests)
+	checkParse(t, tests)
 }
 
 func TestNewOptionsWithNilEnvWithName(t *testing.T) {
@@ -145,7 +145,7 @@ func TestNewOptionsWithNilEnvWithName(t *testing.T) {
 		}),
 	}
 
-	test(t, tests)
+	checkParse(t, tests)
 }
 
 func TestNewOptionsWithEnvNilName(t *testing.T) {
@@ -194,7 +194,7 @@ func TestNewOptionsWithEnvNilName(t *testing.T) {
 		}),
 	}
 
-	test(t, tests)
+	checkParse(t, tests)
 }
 
 func TestNewOptionsWithEnvWithName(t *testing.T) {
@@ -245,5 +245,5 @@ func TestNewOptionsWithEnvWithName(t *testing.T) {
 		}),
 	}
 
-	test(t, tests)
+	checkParse(t, tests)
 }

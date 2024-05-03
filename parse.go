@@ -38,7 +38,7 @@ type env struct {
 	VaultName   string
 }
 
-func newOptions(e env, args []string, w io.Writer) (*option, int) {
+func parse(e env, args []string, w io.Writer) (*option, int) {
 	if len(args) < 2 {
 		args = append(args, "help")
 	}
