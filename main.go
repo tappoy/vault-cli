@@ -34,6 +34,7 @@ The commands are:
   init [name]                Initialize a new vault
   set <key> <value> [name]   Set a key-value pair
   get <key> [name]           Get a value by key
+  delete <key> [name]        Delete a key-value pair
   info [name]                Show information of the vault
   version                    Show version
 
@@ -91,6 +92,8 @@ func newOptions(command string) *option {
 		name = getName(4)
 	case "get":
 		name = getName(3)
+	case "delete":
+		name = getName(3)
 	}
 
 	if name == "" {
@@ -134,25 +137,7 @@ func (o *option) getPassword() error {
 
 // get key
 func (o *option) getKey() string {
-	if o.command == "get" || o.command == "set" {
-		return os.Args[2]
-	} else {
-		panic("Something wrong")
-	}
-}
-
-// get value
-func (o *option) getValue() string {
-	if o.command == "set" {
-		if len(os.Args) >= 4 {
-			return os.Args[3]
-		} else {
-			return ""
-		}
-	} else {
-		panic("Something wrong")
-	}
-	return os.Args[3]
+	return os.Args[2]
 }
 
 func main() {
@@ -210,6 +195,8 @@ func main() {
 		o.set(v)
 	case "get":
 		o.get(v)
+	case "delete":
+		o.delete(v)
 	}
 
 }
@@ -245,7 +232,13 @@ func (o *option) init(v *vault.Vault) {
 
 func (o *option) set(v *vault.Vault) {
 	key := o.getKey()
-	value := o.getValue()
+
+	var value string
+	if len(os.Args) >= 4 {
+		value = os.Args[3]
+	} else {
+		value = ""
+	}
 
 	// check if the vault is initialized
 	if !v.IsInitialized() {
@@ -297,4 +290,29 @@ func (o *option) get(v *vault.Vault) {
 	o.logger.Info(msg)
 
 	fmt.Println(value)
+}
+
+func (o *option) delete(v *vault.Vault) {
+	key := o.getKey()
+
+	fmt.Println("delete key:", key)
+
+	// check if the vault is initialized
+	if !v.IsInitialized() {
+		msg := fmt.Sprintf("Vault is not initialized [%s]", o.getVaultDir())
+		fmt.Println(msg)
+		o.logger.Info(msg)
+		os.Exit(1)
+	}
+
+	if err := v.Delete(key); err != nil {
+		msg := fmt.Sprintf("Cannot delete key '%s' '%v'", key, err)
+		fmt.Println(msg)
+		o.logger.Info(msg)
+		os.Exit(1)
+	}
+
+	msg := fmt.Sprintf("Delete key %s", key)
+	fmt.Println(msg)
+	o.logger.Info(msg)
 }
