@@ -14,10 +14,14 @@ var (
 	testbin     = "./tmp/vault-cli-test"
 )
 
-func TestMain(m *testing.M) {
-	// remove test data
+func rmTestData() {
 	exec.Command("rm", "-rf", testDataDir).Run()
 	exec.Command("rm", "-rf", testLogDir).Run()
+}
+
+func TestMain(m *testing.M) {
+	// remove test data
+	rmTestData()
 
 	// set env
 	os.Setenv("VAULT_DIR", testDataDir)
@@ -43,17 +47,25 @@ func testInfo(t *testing.T, name string) {
 }
 
 func TestDefaultName(t *testing.T) {
+	// remove test data
+	rmTestData()
+
 	name := ""
 	testInfo(t, name)
 	testInit(t, name)
 	testSetAndGet(t, name)
+	testDelete(t, name)
 }
 
 func TestNamedVault(t *testing.T) {
+	// remove test data
+	rmTestData()
+
 	name := "test"
 	testInfo(t, name)
 	testInit(t, name)
 	testSetAndGet(t, name)
+	testDelete(t, name)
 }
 
 func initCommand(name string) ([]byte, error) {
@@ -66,13 +78,11 @@ func initCommand(name string) ([]byte, error) {
 
 func testInit(t *testing.T, name string) {
 	checkInfo(t, false, name)
-	t.Log("must be success")
 	output, err := initCommand(name)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
 	fmt.Println(string(output))
-	t.Log("must be error: already exists")
 	output, err = initCommand(name)
 	if err == nil {
 		t.Errorf("Error: must be error")
@@ -139,5 +149,23 @@ func testSetAndGet(t *testing.T, name string) {
 		t.Errorf("Error: %v", string(output))
 	}
 
+	fmt.Println(string(output))
+}
+
+func delete(key, name string) ([]byte, error) {
+	if name == "" {
+		fmt.Println("delete key")
+		return exec.Command(testbin, "delete", key).Output()
+	} else {
+		fmt.Println("delete key name")
+		return exec.Command(testbin, "delete", key, name).Output()
+	}
+}
+
+func testDelete(t *testing.T, name string) {
+	output, err := delete("key", name)
+	if err != nil {
+		t.Errorf("Error: %v %s", err, output)
+	}
 	fmt.Println(string(output))
 }
