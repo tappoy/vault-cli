@@ -1,5 +1,5 @@
 Usage:
-$ vault-cli command [args] [name]
+$ vault-cli <command> [args...]
 
 The commands are:
   help                       Show this help
@@ -10,13 +10,15 @@ The commands are:
   info [name]                Show information of the vault
   version                    Show version
 
-You must give a password through the prompt when init, set and get.
+You must give a password through the prompt when init, set, get and delete.
 
 Arguments:
   name - The name of the vault. Default is "vault".
   password - The password of the vault. It must be 8 to 32 characters.
 
 Environment variables:
-  VAULT_DIR - The directory of the vault. Default is "/srv".
-  VAULT_LOG_DIR - The directory of the log. Default is "/var/log".
-  VAULT_NAME - The name of the vault. Default is "vault".
+  VAULT_DIR - The root directory of the vault. Default is "/srv".
+  VAULT_LOG_DIR - The root directory of the log. Default is "/var/log".
+  VAULT_NAME - The name of the vault. Default is "vault". It will be used when the name argument is not given.
+
+  By default, the vault data is stored in /srv/<name> and the log is stored in /var/log/<name>.
