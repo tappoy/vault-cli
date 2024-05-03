@@ -15,13 +15,13 @@ var (
 	testbin     = "./tmp/vault-cli-test"
 )
 
-func clean() {
+func cleanMain() {
 	exec.Command("rm", "-rf", testDir).Run()
 }
 
 func TestMain(m *testing.M) {
 	// clean up
-	clean()
+	cleanMain()
 
 	// set env
 	os.Setenv("VAULT_DIR", testDataDir)

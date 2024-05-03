@@ -13,7 +13,7 @@ func main() {
 	}
 
 	// parse arguments
-	o, rc := newOptions(e, os.Args, os.Stdout)
+	o, rc := parse(e, os.Args, os.Stdout)
 	if o == nil || rc != 0 {
 		os.Exit(rc)
 	}
