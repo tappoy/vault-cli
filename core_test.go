@@ -196,3 +196,65 @@ func TestCore_SetGetDelete(t *testing.T) {
 	}
 
 }
+
+func TestCore_PasswordIncorrect(t *testing.T) {
+	testName := "core_password_incorrect"
+	e := makeEnv(testName)
+	cleanCore(e)
+
+	{
+		setDummyPassword("showtpw") // 7 characters
+		wn := wName(testName + "1")
+		w := makeStdout(t, wn)
+		defer w.Close()
+		o, _ := parse(e, split("vault-cli init"), w)
+		run(t, o, 1)
+		grepTrue(t, "Wrong password.", wn)
+	}
+
+	{
+		setInterruptPassword()
+		wn := wName(testName + "2")
+		w := makeStdout(t, wn)
+		defer w.Close()
+		o, _ := parse(e, split("vault-cli init"), w)
+		run(t, o, 1)
+		grepTrue(t, "Interrupted.", wn)
+	}
+
+	{
+		setDummyPassword("12345678") // valid password
+		wn := wName(testName + "3")
+		w := makeStdout(t, wn)
+		defer w.Close()
+		o, _ := parse(e, split("vault-cli init"), w)
+		run(t, o, 0)
+		grepTrue(t, "Init vault.", wn)
+	}
+
+	{
+		setDummyPassword("1234567890") // incorrect password
+		wn := wName(testName + "4")
+		w := makeStdout(t, wn)
+		defer w.Close()
+		o, _ := parse(e, split("vault-cli set k1 k1value2"), w)
+		run(t, o, 1)
+		grepTrue(t, "Wrong password.", wn)
+	}
+
+}
+
+func TestCore_UnknownCommand(t *testing.T) {
+	testName := "core_unknown_command"
+	e := makeEnv(testName)
+	cleanCore(e)
+
+	{
+		wn := wName(testName + "1")
+		w := makeStdout(t, wn)
+		defer w.Close()
+		o, _ := parse(e, split("vault-cli unknown-command"), w)
+		run(t, o, 1)
+		grepTrue(t, "Unknown command. Run vault-cli help", wn)
+	}
+}
