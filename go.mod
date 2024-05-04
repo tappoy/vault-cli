@@ -4,7 +4,7 @@ go 1.22.2
 
 require (
 	github.com/tappoy/logger v1.7.0
-	github.com/tappoy/pwinput v1.2.0
+	github.com/tappoy/pwinput v1.3.0
 	github.com/tappoy/vault v1.5.0
 	github.com/tappoy/version v1.1.0
 )
