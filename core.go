@@ -51,7 +51,7 @@ func (o *option) createVault(logger *logger.Logger) (*vault.Vault, bool) {
 		msg := fmt.Sprintf("Wrong password.")
 		fmt.Fprintln(o.w, msg)
 		logger.Notice(msg)
-	default: // TODO: cover
+	default: // TODO: cover. Permission.
 		msg := fmt.Sprintf("Cannot open vault.\terror:%v\tvaultDir:%s", err, o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		logger.Info(msg)
@@ -67,7 +67,7 @@ func (o *option) getKey() string {
 // create logger
 func (o *option) createLogger() *logger.Logger {
 	logger, err := logger.NewLogger(o.logDir)
-	if err != nil { // TODO: cover
+	if err != nil { // TODO: cover. Permission.
 		msg := fmt.Sprintf("Cannot create logger.\terror:%v\tlogDir:%s", err, o.logDir)
 		fmt.Fprintln(o.w, msg)
 		return nil
@@ -101,7 +101,7 @@ func (o *option) run() int {
 
 // check vault initialized
 func (o *option) checkVaultInitialized(v *vault.Vault, logger *logger.Logger) int {
-	if !v.IsInitialized() { // TODO: cover
+	if !v.IsInitialized() { // TODO: cover. Permission.
 		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		logger.Info(msg)
@@ -210,11 +210,11 @@ func (o *option) set() int {
 	var value string
 	if len(o.args) >= 4 {
 		value = o.args[3]
-	} else { // TODO: cover
+	} else { // TODO: cover. No set value.
 		value = ""
 	}
 
-	if err := v.Set(key, value); err != nil { // TODO: cover
+	if err := v.Set(key, value); err != nil { // TODO: cover. Never happen?
 		msg := fmt.Sprintf("Cannot set.\tkey:%s\terror:%v", key, err)
 		fmt.Fprintln(o.w, msg)
 		logger.Info(msg)
@@ -251,7 +251,7 @@ func (o *option) get() int {
 			msg := fmt.Sprintf("Not found.\tkey:%s", key)
 			fmt.Fprintln(o.w, msg)
 			logger.Info(msg)
-		default: // TODO: cover
+		default: // TODO: cover. Never happen?
 			msg := fmt.Sprintf("Cannot get.\tkey:%s error:%v", key, err)
 			fmt.Fprintln(o.w, msg)
 			logger.Info(msg)
@@ -283,9 +283,16 @@ func (o *option) delete() int {
 	key := o.getKey()
 
 	if err := v.Delete(key); err != nil { // TODO: cover
-		msg := fmt.Sprintf("Cannot delete.\tkey:%s\terror:%v", key, err)
-		fmt.Fprintln(o.w, msg)
-		logger.Info(msg)
+		switch err {
+		case vault.ErrKeyNotFound:
+			msg := fmt.Sprintf("Not found.\tkey:%s", key)
+			fmt.Fprintln(o.w, msg)
+			logger.Info(msg)
+		default: // TODO: cover. Never happen?
+			msg := fmt.Sprintf("Cannot delete.\tkey:%s error:%v", key, err)
+			fmt.Fprintln(o.w, msg)
+			logger.Info(msg)
+		}
 		return 1
 	}
 
