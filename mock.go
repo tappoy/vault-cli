@@ -10,7 +10,7 @@ import (
 var dummyPassword = "dummyPassword"
 
 func newPasswordInput() pwinput.PasswordInput {
-	fmt.Println("RUNNING MOCK: dummyPassword: ", dummyPassword)
+	fmt.Println("    RUNNING MOCK: dummyPassword: ", dummyPassword)
 	return pwinput.NewDummyPasswordInput(dummyPassword)
 }
 
