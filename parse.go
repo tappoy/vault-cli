@@ -62,12 +62,9 @@ func parse(e env, args []string, w io.Writer) (*option, int) {
 	return &option{
 		command:  command,
 		name:     name,
-		password: "",
 		vaultDir: filepath.Join(getVaultDirRoot(e), name),
 		logDir:   filepath.Join(getLogDirRoot(e), name),
-		logger:   nil,
 		w:        w,
 		args:     args,
-		pwi:      newPasswordInput(),
 	}, 0
 }
