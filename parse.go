@@ -39,13 +39,15 @@ type env struct {
 }
 
 func parse(e env, args []string, w io.Writer) (*option, int) {
+	var name string
+	var command string
+
 	if len(args) < 2 {
-		args = append(args, "help")
+		command = ""
+	} else {
+		command = args[1]
 	}
 
-	var name string
-
-	command := args[1]
 	switch command {
 	case "init", "info":
 		name = getName(2, args, e)
