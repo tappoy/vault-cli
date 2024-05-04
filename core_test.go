@@ -3,14 +3,15 @@ package main
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
 
 var (
 	testEnv = env{
-		VaultDir:    "tmp/test/data",
-		VaultLogDir: "tmp/test/log",
+		VaultDir:    "tmp/core/data",
+		VaultLogDir: "tmp/core/log",
 		VaultName:   "",
 	}
 )
@@ -24,8 +25,8 @@ func makeEnv(name string) env {
 }
 
 func cleanCore(e env) {
-	os.RemoveAll(e.VaultDir)
-	os.RemoveAll(e.VaultLogDir)
+	os.RemoveAll(filepath.Join(e.VaultDir, e.VaultName))
+	os.RemoveAll(filepath.Join(e.VaultLogDir, e.VaultName))
 }
 
 func split(s string) []string {
@@ -33,10 +34,13 @@ func split(s string) []string {
 }
 
 func wName(name string) string {
-	return "tmp/" + name + "_stdout.txt"
+	return "tmp/core/" + name + "_stdout.txt"
 }
 
 func makeStdout(t *testing.T, name string) *os.File {
+	if err := os.MkdirAll(filepath.Dir(name), 0755); err != nil {
+		t.Fatal(err)
+	}
 	w, err := os.Create(name)
 	if err != nil {
 		t.Fatal(err)
@@ -45,8 +49,10 @@ func makeStdout(t *testing.T, name string) *os.File {
 }
 
 func run(t *testing.T, o *option, want int) {
+	t.Logf("o: %v", o.args)
 	if rc := o.run(); rc != want {
 		t.Errorf("ERROR: got %v, want %v", rc, want)
+		t.Logf("o: %v", o)
 	}
 }
 
@@ -147,8 +153,7 @@ func TestCore_Init(t *testing.T) {
 	}
 }
 
-func TestCore_SetGetDelete(t *testing.T) {
-	testName := "core_set_get_delete"
+func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 	e := makeEnv(testName)
 	cleanCore(e)
 
@@ -159,6 +164,23 @@ func TestCore_SetGetDelete(t *testing.T) {
 		o, _ := parse(e, split("vault-cli init"), w)
 		run(t, o, 0)
 		grepTrue(t, "Init vault.", wn)
+
+		if !dataDir {
+			// set read only to data dir
+			os.Chmod(o.vaultDir, 0400)
+			defer os.Chmod(o.vaultDir, 0700)
+		}
+		if !logDir {
+			// set read only to log dir
+			os.Chmod(o.logDir, 0400)
+			defer os.Chmod(o.logDir, 0700)
+		}
+	}
+
+	want := 0
+	if !dataDir || !logDir {
+		want = 1
+		t.Logf("want: %v", want)
 	}
 
 	{
@@ -166,7 +188,7 @@ func TestCore_SetGetDelete(t *testing.T) {
 		w := makeStdout(t, wn)
 		defer w.Close()
 		o, _ := parse(e, split("vault-cli set k1 k1value"), w)
-		run(t, o, 0)
+		run(t, o, want)
 	}
 
 	{
@@ -174,8 +196,10 @@ func TestCore_SetGetDelete(t *testing.T) {
 		w := makeStdout(t, wn)
 		defer w.Close()
 		o, _ := parse(e, split("vault-cli get k1"), w)
-		run(t, o, 0)
-		grepTrue(t, "k1value", wn)
+		run(t, o, want)
+		if want == 0 {
+			grepTrue(t, "k1value", wn)
+		}
 	}
 
 	{
@@ -183,7 +207,7 @@ func TestCore_SetGetDelete(t *testing.T) {
 		w := makeStdout(t, wn)
 		defer w.Close()
 		o, _ := parse(e, split("vault-cli delete k1"), w)
-		run(t, o, 0)
+		run(t, o, want)
 	}
 
 	{
@@ -192,9 +216,26 @@ func TestCore_SetGetDelete(t *testing.T) {
 		defer w.Close()
 		o, _ := parse(e, split("vault-cli get k1"), w)
 		run(t, o, 1)
-		grepTrue(t, "Not found.", wn)
+		if want == 0 {
+			grepTrue(t, "Not found.", wn)
+		}
 	}
 
+}
+
+func TestCore_SetGetDelete(t *testing.T) {
+	testName := "core_set_get_delete"
+	setGetDelete(t, testName, true, true)
+}
+
+func TestCore_SetGetDeleteWithReadOnlyDataDir(t *testing.T) {
+	testName := "core_set_get_delete_with_read_only_data_dir"
+	setGetDelete(t, testName, false, true)
+}
+
+func TestCore_SetGetDeleteWithReadOnlyLogDir(t *testing.T) {
+	testName := "core_set_get_delete_with_read_only_log_dir"
+	setGetDelete(t, testName, true, false)
 }
 
 func TestCore_PasswordIncorrect(t *testing.T) {
