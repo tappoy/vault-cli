@@ -68,8 +68,7 @@ func (o *option) getKey() string {
 func (o *option) createLogger() *logger.Logger {
 	logger, err := logger.NewLogger(o.logDir)
 	if err != nil { // TODO: cover. Permission.
-		msg := fmt.Sprintf("Cannot create logger.\terror:%v\tlogDir:%s", err, o.logDir)
-		fmt.Fprintln(o.w, msg)
+		fmt.Fprintf(o.w, "Cannot create logger.\terror:%v\tlogDir:%s\n", err, o.logDir)
 		return nil
 	}
 	return logger
@@ -192,7 +191,7 @@ func (o *option) init() int {
 
 func (o *option) set() int {
 	logger := o.createLogger()
-	if logger == nil { // TODO: cover
+	if logger == nil {
 		return 1
 	}
 
@@ -201,7 +200,7 @@ func (o *option) set() int {
 		return 1
 	}
 
-	if o.checkVaultInitialized(v, logger) != 0 { // TODO: cover
+	if o.checkVaultInitialized(v, logger) != 0 {
 		return 1
 	}
 
@@ -229,7 +228,7 @@ func (o *option) set() int {
 
 func (o *option) get() int {
 	logger := o.createLogger()
-	if logger == nil { // TODO: cover
+	if logger == nil {
 		return 1
 	}
 
@@ -238,7 +237,7 @@ func (o *option) get() int {
 		return 1
 	}
 
-	if o.checkVaultInitialized(v, logger) != 0 { // TODO: cover
+	if o.checkVaultInitialized(v, logger) != 0 {
 		return 1
 	}
 
@@ -267,7 +266,7 @@ func (o *option) get() int {
 
 func (o *option) delete() int {
 	logger := o.createLogger()
-	if logger == nil { // TODO: cover
+	if logger == nil {
 		return 1
 	}
 
@@ -276,7 +275,7 @@ func (o *option) delete() int {
 		return 1
 	}
 
-	if o.checkVaultInitialized(v, logger) != 0 { // TODO: cover
+	if o.checkVaultInitialized(v, logger) != 0 {
 		return 1
 	}
 
@@ -284,7 +283,7 @@ func (o *option) delete() int {
 
 	if err := v.Delete(key); err != nil { // TODO: cover
 		switch err {
-		case vault.ErrKeyNotFound:
+		case vault.ErrKeyNotFound: // TODO: cover
 			msg := fmt.Sprintf("Not found.\tkey:%s", key)
 			fmt.Fprintln(o.w, msg)
 			logger.Info(msg)
@@ -293,7 +292,7 @@ func (o *option) delete() int {
 			fmt.Fprintln(o.w, msg)
 			logger.Info(msg)
 		}
-		return 1
+		return 1 // TODO: cover
 	}
 
 	msg := fmt.Sprintf("delete\tkey:%s", key)
