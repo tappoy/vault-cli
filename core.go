@@ -51,7 +51,7 @@ func (o *option) createVault(logger *logger.Logger) (*vault.Vault, bool) {
 		msg := fmt.Sprintf("Wrong password.")
 		fmt.Fprintln(o.w, msg)
 		logger.Notice(msg)
-	default:
+	default: // TODO: cover
 		msg := fmt.Sprintf("Cannot open vault.\terror:%v\tvaultDir:%s", err, o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		logger.Info(msg)
@@ -67,7 +67,7 @@ func (o *option) getKey() string {
 // create logger
 func (o *option) createLogger() *logger.Logger {
 	logger, err := logger.NewLogger(o.logDir)
-	if err != nil {
+	if err != nil { // TODO: cover
 		msg := fmt.Sprintf("Cannot create logger.\terror:%v\tlogDir:%s", err, o.logDir)
 		fmt.Fprintln(o.w, msg)
 		return nil
@@ -101,7 +101,7 @@ func (o *option) run() int {
 
 // check vault initialized
 func (o *option) checkVaultInitialized(v *vault.Vault, logger *logger.Logger) int {
-	if !v.IsInitialized() {
+	if !v.IsInitialized() { // TODO: cover
 		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		logger.Info(msg)
@@ -167,7 +167,7 @@ func (o *option) info() int {
 
 func (o *option) init() int {
 	logger := o.createLogger()
-	if logger == nil {
+	if logger == nil { // TODO: cover
 		return 1
 	}
 
@@ -177,7 +177,7 @@ func (o *option) init() int {
 	}
 
 	err := v.Init()
-	if err != nil {
+	if err != nil { // TODO: cover
 		msg := fmt.Sprintf("Cannot init vault.\terror:%v\tvaultDir:%s", err, o.vaultDir)
 		fmt.Fprintln(o.w, msg)
 		logger.Notice(msg)
@@ -192,7 +192,7 @@ func (o *option) init() int {
 
 func (o *option) set() int {
 	logger := o.createLogger()
-	if logger == nil {
+	if logger == nil { // TODO: cover
 		return 1
 	}
 
@@ -201,7 +201,7 @@ func (o *option) set() int {
 		return 1
 	}
 
-	if o.checkVaultInitialized(v, logger) != 0 {
+	if o.checkVaultInitialized(v, logger) != 0 { // TODO: cover
 		return 1
 	}
 
@@ -210,11 +210,11 @@ func (o *option) set() int {
 	var value string
 	if len(o.args) >= 4 {
 		value = o.args[3]
-	} else {
+	} else { // TODO: cover
 		value = ""
 	}
 
-	if err := v.Set(key, value); err != nil {
+	if err := v.Set(key, value); err != nil { // TODO: cover
 		msg := fmt.Sprintf("Cannot set.\tkey:%s\terror:%v", key, err)
 		fmt.Fprintln(o.w, msg)
 		logger.Info(msg)
@@ -229,16 +229,16 @@ func (o *option) set() int {
 
 func (o *option) get() int {
 	logger := o.createLogger()
-	if logger == nil {
+	if logger == nil { // TODO: cover
 		return 1
 	}
 
 	v, ok := o.createVault(logger)
-	if !ok {
+	if !ok { // TODO: cover
 		return 1
 	}
 
-	if o.checkVaultInitialized(v, logger) != 0 {
+	if o.checkVaultInitialized(v, logger) != 0 { // TODO: cover
 		return 1
 	}
 
@@ -251,7 +251,7 @@ func (o *option) get() int {
 			msg := fmt.Sprintf("Not found.\tkey:%s", key)
 			fmt.Fprintln(o.w, msg)
 			logger.Info(msg)
-		default:
+		default: // TODO: cover
 			msg := fmt.Sprintf("Cannot get.\tkey:%s error:%v", key, err)
 			fmt.Fprintln(o.w, msg)
 			logger.Info(msg)
@@ -267,22 +267,22 @@ func (o *option) get() int {
 
 func (o *option) delete() int {
 	logger := o.createLogger()
-	if logger == nil {
+	if logger == nil { // TODO: cover
 		return 1
 	}
 
 	v, ok := o.createVault(logger)
-	if !ok {
+	if !ok { // TODO: cover
 		return 1
 	}
 
-	if o.checkVaultInitialized(v, logger) != 0 {
+	if o.checkVaultInitialized(v, logger) != 0 { // TODO: cover
 		return 1
 	}
 
 	key := o.getKey()
 
-	if err := v.Delete(key); err != nil {
+	if err := v.Delete(key); err != nil { // TODO: cover
 		msg := fmt.Sprintf("Cannot delete.\tkey:%s\terror:%v", key, err)
 		fmt.Fprintln(o.w, msg)
 		logger.Info(msg)
