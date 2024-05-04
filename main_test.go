@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	testDir     = "./tmp/test_dst"
-	testDataDir = "./tmp/test_dst/data"
-	testLogDir  = "./tmp/test_dst/log"
+	testDir     = "./tmp/main"
+	testDataDir = "./tmp/main/data"
+	testLogDir  = "./tmp/main/log"
 	testbin     = "./tmp/vault-cli-test"
 )
 

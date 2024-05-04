@@ -47,7 +47,7 @@ func checkParse(t *testing.T, tests []parseTest) {
 	}
 }
 
-func TestNewOptionsWithNilEnvNilName(t *testing.T) {
+func TestParseWithNilEnvNilName(t *testing.T) {
 	testEnv := env{
 		VaultDir:    "",
 		VaultLogDir: "",
@@ -55,6 +55,12 @@ func TestNewOptionsWithNilEnvNilName(t *testing.T) {
 	}
 
 	tests := []parseTest{
+		makeParseTest("vault-cli", testEnv, 0, &option{
+			command:  "",
+			name:     "vault",
+			logDir:   "/var/log/vault",
+			vaultDir: "/srv/vault",
+		}),
 		makeParseTest("vault-cli help", testEnv, 0, &option{
 			command:  "help",
 			name:     "vault",
@@ -96,7 +102,7 @@ func TestNewOptionsWithNilEnvNilName(t *testing.T) {
 	checkParse(t, tests)
 }
 
-func TestNewOptionsWithNilEnvWithName(t *testing.T) {
+func TestParseWithNilEnvWithName(t *testing.T) {
 	name := "test"
 
 	testEnv := env{
@@ -148,7 +154,7 @@ func TestNewOptionsWithNilEnvWithName(t *testing.T) {
 	checkParse(t, tests)
 }
 
-func TestNewOptionsWithEnvNilName(t *testing.T) {
+func TestParseWithEnvNilName(t *testing.T) {
 	testEnv := env{
 		VaultDir:    "/env",
 		VaultLogDir: "/env/log",
@@ -156,6 +162,12 @@ func TestNewOptionsWithEnvNilName(t *testing.T) {
 	}
 
 	tests := []parseTest{
+		makeParseTest("vault-cli", testEnv, 0, &option{
+			command:  "",
+			name:     "vault",
+			logDir:   "/env/log/vault",
+			vaultDir: "/env/vault",
+		}),
 		makeParseTest("vault-cli help", testEnv, 0, &option{
 			command:  "help",
 			name:     "vault", // TODO: name should be got from the -name flag
@@ -197,7 +209,7 @@ func TestNewOptionsWithEnvNilName(t *testing.T) {
 	checkParse(t, tests)
 }
 
-func TestNewOptionsWithEnvWithName(t *testing.T) {
+func TestParseWithEnvWithName(t *testing.T) {
 	name := "vne2"
 
 	testEnv := env{
