@@ -32,12 +32,18 @@ func TestParse(t *testing.T) {
 			envs: env1,
 			want: want("help", "parse_test", "tmp/parse/data/parse_test", "tmp/parse/log/parse_test", split("vault-cli help")),
 		},
+		{
+			args: split("vault-cli -n flag_test init"),
+			envs: env1,
+			want: want("init", "flag_test", "tmp/parse/data/flag_test", "tmp/parse/log/flag_test", split("vault-cli init")),
+		},
 	}
 
 	// run tests
 	for _, c := range cases {
 		env.DummyEnv = c.envs
 		env.Args = c.args
+		t.Logf("TestParse: env: %v, args: %s", c.envs, c.args)
 		got := parse()
 		if !reflect.DeepEqual(got, c.want) {
 			t.Errorf("ERROR:\nargs %s\ngot  %v\nwant %v\n", c.args, got, c.want)
