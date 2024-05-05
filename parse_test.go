@@ -1,79 +1,46 @@
 package main
 
 import (
-	"io"
+	"github.com/tappoy/env"
+	"reflect"
 	"testing"
 )
 
-type wants struct {
-	command  string
-	name     string
-	vaultDir string
-	logDir   string
-	w        io.Writer
-	args     []string
+func want(command, name, vaultDir, logDir string, args []string) *option {
+	return &option{command: command, name: name, vaultDir: vaultDir, logDir: logDir, w: env.Out, args: args}
 }
 
-func check(t *testing.T, e env, f flags, args []string, w io.Writer, want wants) {
-	opt := parse(e, f, args, w)
-	if opt.command != want.command {
-		t.Errorf("command: got %q, want %q", opt.command, want.command)
-	}
-	if opt.name != want.name {
-		t.Errorf("name: got %q, want %q", opt.name, want.name)
-	}
-	if opt.vaultDir != want.vaultDir {
-		t.Errorf("vaultDir: got %q, want %q", opt.vaultDir, want.vaultDir)
-	}
-	if opt.logDir != want.logDir {
-		t.Errorf("logDir: got %q, want %q", opt.logDir, want.logDir)
-	}
-	if opt.w != want.w {
-		t.Errorf("w: got %q, want %q", opt.w, want.w)
-	}
-}
-
+// TestParse tests the parse function.
 func TestParse(t *testing.T) {
-	e := env{
-		VaultName:   "vault",
-		VaultDir:    "/srv",
-		VaultLogDir: "/var/log",
-	}
-	f := flags{
-		name: nil,
-	}
-	args := []string{"arg1", "arg2", "arg3"}
-	w := io.Discard
-	want := wants{
-		command:  "arg2",
-		name:     "vault",
-		vaultDir: "/srv/vault",
-		logDir:   "/var/log/vault",
-		w:        w,
-		args:     args,
-	}
-	check(t, e, f, args, w, want)
+	// define nil environment
+	env0 := env.Env{"VAULT_DIR": "", "VAULT_LOG_DIR": "", "VAULT_NAME": ""}
+	env1 := env.Env{"VAULT_DIR": "tmp/parse/data", "VAULT_LOG_DIR": "tmp/parse/log", "VAULT_NAME": "parse_test"}
 
-	name := "joey"
-	f = flags{name: &name}
-	want = wants{
-		command:  "arg2",
-		name:     "joey",
-		vaultDir: "/srv/joey",
-		logDir:   "/var/log/joey",
-		w:        w,
-		args:     args,
+	// test cases
+	cases := []struct {
+		args []string
+		envs env.Env
+		want *option
+	}{
+		{
+			args: split("vault-cli help"),
+			envs: env0,
+			want: want("help", "vault", "/srv/vault", "/var/log/vault", split("vault-cli help")),
+		},
+		{
+			args: split("vault-cli help"),
+			envs: env1,
+			want: want("help", "parse_test", "tmp/parse/data/parse_test", "tmp/parse/log/parse_test", split("vault-cli help")),
+		},
 	}
-	check(t, e, f, args, w, want)
 
-	args = []string{"arg1"}
-	want = wants{
-		command:  "",
-		name:     "joey",
-		vaultDir: "/srv/joey",
-		logDir:   "/var/log/joey",
-		w:        w,
-		args:     args,
+	// run tests
+	for _, c := range cases {
+		env.DummyEnv = c.envs
+		env.Args = c.args
+		got := parse()
+		if !reflect.DeepEqual(got, c.want) {
+			t.Errorf("ERROR:\nargs %s\ngot  %v\nwant %v\n", c.args, got, c.want)
+		}
 	}
-	check(t, e, f, args, w, want)
 }
