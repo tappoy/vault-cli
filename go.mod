@@ -3,8 +3,8 @@ module github.com/tappoy/vault-cli
 go 1.22.2
 
 require (
-	github.com/tappoy/env v0.0.0-20240404090000-155bcf0e5466
-	github.com/tappoy/logger v1.8.1
+	github.com/tappoy/env v1.2.0
+	github.com/tappoy/logger v1.8.2
 	github.com/tappoy/pwinput v1.3.0
 	github.com/tappoy/vault v1.5.0
 	github.com/tappoy/version v1.1.0
