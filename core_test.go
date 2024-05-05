@@ -87,7 +87,8 @@ func TestCore_Help(t *testing.T) {
 	cleanCore(e)
 	w := makeStdout(t, wName(testName))
 	defer w.Close()
-	o, _ := parse(e, split("vault-cli help"), w)
+	f := flags{name: nil}
+	o := parse(e, f, split("vault-cli help"), w)
 	run(t, o, 0)
 }
 
@@ -97,7 +98,8 @@ func TestCore_Version(t *testing.T) {
 	cleanCore(e)
 	w := makeStdout(t, wName(testName))
 	defer w.Close()
-	o, _ := parse(e, split("vault-cli version"), w)
+	f := flags{name: nil}
+	o := parse(e, f, split("vault-cli version"), w)
 	run(t, o, 0)
 }
 
@@ -107,7 +109,8 @@ func TestCore_Genpw(t *testing.T) {
 	cleanCore(e)
 	w := makeStdout(t, wName(testName))
 	defer w.Close()
-	o, _ := parse(e, split("vault-cli genpw"), w)
+	f := flags{name: nil}
+	o := parse(e, f, split("vault-cli genpw"), w)
 	run(t, o, 0)
 }
 
@@ -117,7 +120,8 @@ func TestCore_Info(t *testing.T) {
 	cleanCore(e)
 	w := makeStdout(t, wName(testName))
 	defer w.Close()
-	o, _ := parse(e, split("vault-cli info"), w)
+	f := flags{name: nil}
+	o := parse(e, f, split("vault-cli info"), w)
 	run(t, o, 0)
 }
 
@@ -130,7 +134,8 @@ func TestCore_Init(t *testing.T) {
 		wn := wName(testName + "1")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli info"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli info"), w)
 		run(t, o, 0)
 		grepTrue(t, "init: false", wn)
 	}
@@ -139,7 +144,8 @@ func TestCore_Init(t *testing.T) {
 		wn := wName(testName + "2")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli init"), w)
 		run(t, o, 0)
 	}
 
@@ -147,7 +153,8 @@ func TestCore_Init(t *testing.T) {
 		wn := wName(testName + "3")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli info"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli info"), w)
 		run(t, o, 0)
 		grepTrue(t, "init: true", wn)
 	}
@@ -161,7 +168,8 @@ func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 		wn := wName(testName + "1")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli init"), w)
 		run(t, o, 0)
 		grepTrue(t, "Init vault.", wn)
 
@@ -187,7 +195,8 @@ func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 		wn := wName(testName + "2")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli set k1 k1value"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli set k1 k1value"), w)
 		run(t, o, want)
 	}
 
@@ -195,7 +204,8 @@ func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 		wn := wName(testName + "3")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli get k1"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli get k1"), w)
 		run(t, o, want)
 		if want == 0 {
 			grepTrue(t, "k1value", wn)
@@ -206,7 +216,8 @@ func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 		wn := wName(testName + "4")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli delete k1"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli delete k1"), w)
 		run(t, o, want)
 	}
 
@@ -214,7 +225,8 @@ func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 		wn := wName(testName + "5")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli get k1"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli get k1"), w)
 		run(t, o, 1)
 		if want == 0 {
 			grepTrue(t, "Not found.", wn)
@@ -248,7 +260,8 @@ func TestCore_PasswordIncorrect(t *testing.T) {
 		wn := wName(testName + "1")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli init"), w)
 		run(t, o, 1)
 		grepTrue(t, "Wrong password.", wn)
 	}
@@ -258,7 +271,8 @@ func TestCore_PasswordIncorrect(t *testing.T) {
 		wn := wName(testName + "2")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli init"), w)
 		run(t, o, 1)
 		grepTrue(t, "Interrupted.", wn)
 	}
@@ -268,7 +282,8 @@ func TestCore_PasswordIncorrect(t *testing.T) {
 		wn := wName(testName + "3")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli init"), w)
 		run(t, o, 0)
 		grepTrue(t, "Init vault.", wn)
 	}
@@ -278,7 +293,8 @@ func TestCore_PasswordIncorrect(t *testing.T) {
 		wn := wName(testName + "4")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli set k1 k1value2"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli set k1 k1value2"), w)
 		run(t, o, 1)
 		grepTrue(t, "Wrong password.", wn)
 	}
@@ -294,7 +310,8 @@ func TestCore_UnknownCommand(t *testing.T) {
 		wn := wName(testName + "1")
 		w := makeStdout(t, wn)
 		defer w.Close()
-		o, _ := parse(e, split("vault-cli unknown-command"), w)
+		f := flags{name: nil}
+		o := parse(e, f, split("vault-cli unknown-command"), w)
 		run(t, o, 1)
 		grepTrue(t, "Unknown command. Run vault-cli help", wn)
 	}
