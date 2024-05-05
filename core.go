@@ -76,7 +76,7 @@ func (o *option) createLogger() *logger.Logger {
 
 func (o *option) run() int {
 	switch o.command {
-	case "help":
+	case "", "help":
 		return o.usage()
 	case "version":
 		return o.version()
@@ -113,30 +113,33 @@ func (o *option) checkVaultInitialized(v *vault.Vault, logger *logger.Logger) in
 // print usage
 func (o *option) usage() int {
 	fmt.Fprintf(o.w, `Usage:
-$ vault-cli <command> [args...]
+$ vault-cli [-n <name>] <command>
 
-The commands are:
-  help                       Show this help
-  init [name]                Initialize a new vault
-  set <key> <value> [name]   Set a key-value pair
-  get <key> [name]           Get a value by key
-  delete <key> [name]        Delete a key-value pair
-  info [name]                Show information of the vault
-  genpw                      Generate a random password
-  version                    Show version
+Commands:
+  help               Show this help
+  init               Initialize a new vault
+  set <key> <value>  Set a key-value pair
+  get <key>          Get a value by key
+  delete <key>       Delete a key-value pair
+  info               Show information of the vault
+  genpw              Generate a random password
+  version            Show version
+
+Flags:
+  -n <name>  The name of the vault.
 
 You must give a password through the prompt when init, set, get and delete.
-
-Arguments:
-  name - The name of the vault. Default is "vault".
-  password - The password of the vault. It must be 8 to 32 characters.
+The password must be 8 to 32 characters.
 
 Environment variables:
-  VAULT_DIR - The root directory of the vault. Default is "/srv".
-  VAULT_LOG_DIR - The root directory of the log. Default is "/var/log".
-  VAULT_NAME - The name of the vault. Default is "vault". It will be used when the name argument is not given.
+  VAULT_DIR      The root directory of the vault. Default is "/srv".
+  VAULT_LOG_DIR  The root directory of the log. Default is "/var/log".
+  VAULT_NAME     The name of the vault. Default is "vault".
+                 It will be used when the name argument is not given.
 
-  By default, the vault data is stored in /srv/<name> and the log is stored in /var/log/<name>.
+By default:
+  Vault data dir: /srv/<name>
+  Log data dir:   /var/log/<name>
 `)
 	return 0
 }
