@@ -10,11 +10,7 @@ TEST=tmp/cover
 
 .PHONY: all clean cover test
 
-all: $(WORKING_DIRS) $(FMT) $(BIN) $(USAGE) $(TEST)
-
-# Workaround. I don't know why,
-# but the $(USAGE) target is not working in github actions.
-actions: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST)
+all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST)
 
 clean:
 	rm -rf $(WORKING_DIRS)
@@ -28,11 +24,8 @@ $(FMT): $(SRC)
 go.sum: go.mod
 	go mod tidy
 
-$(BIN): $(SRC) go.sum
+$(BIN): $(SRC) go.sum $(USAGE)
 	go build -o $(BIN)
-
-$(USAGE): $(BIN)
-	$(BIN) help > $(USAGE)
 
 $(TESTBIN): $(BIN)
 	go build -tags test -o $(TESTBIN)

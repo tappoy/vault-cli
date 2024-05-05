@@ -112,35 +112,7 @@ func (o *option) checkVaultInitialized(v *vault.Vault, logger *logger.Logger) in
 
 // print usage
 func (o *option) usage() int {
-	fmt.Fprintf(o.w, `Usage:
-$ vault-cli [-n <name>] <command>
-
-Commands:
-  help               Show this help
-  init               Initialize a new vault
-  set <key> <value>  Set a key-value pair
-  get <key>          Get a value by key
-  delete <key>       Delete a key-value pair
-  info               Show information of the vault
-  genpw              Generate a random password
-  version            Show version
-
-Flags:
-  -n <name>  The name of the vault.
-
-You must give a password through the prompt when init, set, get and delete.
-The password must be 8 to 32 characters.
-
-Environment variables:
-  VAULT_DIR      The root directory of the vault. Default is "/srv".
-  VAULT_LOG_DIR  The root directory of the log. Default is "/var/log".
-  VAULT_NAME     The name of the vault. Default is "vault".
-                 It will be used when the name argument is not given.
-
-By default:
-  Vault data dir: /srv/<name>
-  Log data dir:   /var/log/<name>
-`)
+	fmt.Fprintf(o.w, usage)
 	return 0
 }
 
