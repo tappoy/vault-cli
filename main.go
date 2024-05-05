@@ -1,23 +1,20 @@
 package main
 
 import (
-	"os"
+	_ "embed"
+	"github.com/tappoy/env"
 )
 
-func main() {
-	// parse environment variables
-	e := env{
-		VaultDir:    os.Getenv("VAULT_DIR"),
-		VaultLogDir: os.Getenv("VAULT_LOG_DIR"),
-		VaultName:   os.Getenv("VAULT_NAME"),
-	}
+//go:embed Usage.txt
+var usage string
 
+func main() {
 	// parse arguments
-	o, rc := parse(e, os.Args, os.Stdout)
-	if o == nil || rc != 0 {
-		os.Exit(rc)
+	o := parse()
+	if o == nil {
+		env.Exit(1)
 	}
 
 	// run command
-	os.Exit(o.run())
+	env.Exit(o.run())
 }

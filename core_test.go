@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/tappoy/env"
 	"io"
 	"os"
 	"path/filepath"
@@ -8,36 +9,19 @@ import (
 	"testing"
 )
 
-var (
-	testEnv = env{
-		VaultDir:    "tmp/core/data",
-		VaultLogDir: "tmp/core/log",
-		VaultName:   "",
+func setEnv(name string) {
+	env.DummyEnv = env.Env{
+		"VAULT_DIR":     testRoot + "/core/data",
+		"VAULT_LOG_DIR": testRoot + "/core/log",
+		"VAULT_NAME":    name,
 	}
-)
-
-func makeEnv(name string) env {
-	return env{
-		VaultDir:    testEnv.VaultDir,
-		VaultLogDir: testEnv.VaultLogDir,
-		VaultName:   name,
-	}
-}
-
-func cleanCore(e env) {
-	os.RemoveAll(filepath.Join(e.VaultDir, e.VaultName))
-	os.RemoveAll(filepath.Join(e.VaultLogDir, e.VaultName))
-}
-
-func split(s string) []string {
-	return strings.Split(s, " ")
 }
 
 func wName(name string) string {
-	return "tmp/core/" + name + "_stdout.txt"
+	return testRoot + "/core/" + name + "_stdout.txt"
 }
 
-func makeStdout(t *testing.T, name string) *os.File {
+func setStdout(t *testing.T, name string) {
 	if err := os.MkdirAll(filepath.Dir(name), 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -45,11 +29,10 @@ func makeStdout(t *testing.T, name string) *os.File {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return w
+	env.Out = w
 }
 
 func run(t *testing.T, o *option, want int) {
-	t.Logf("o: %v", o.args)
 	if rc := o.run(); rc != want {
 		t.Errorf("ERROR: got %v, want %v", rc, want)
 		t.Logf("o: %v", o)
@@ -81,100 +64,55 @@ func grep(t *testing.T, search string, file string, want bool) {
 	}
 }
 
+func doTest(t *testing.T, testName, wsuffix, args string, want int, search string) (*option, string) {
+	wn := wName(testName + wsuffix)
+	setStdout(t, wn)
+	setEnv(testName)
+	env.Args = split(args)
+	o := parse()
+	run(t, o, want)
+	if search != "" {
+		grepTrue(t, search, wn)
+	}
+	return o, wn
+}
+
 func TestCore_Help(t *testing.T) {
-	testName := "core_help"
-	e := makeEnv(testName)
-	cleanCore(e)
-	w := makeStdout(t, wName(testName))
-	defer w.Close()
-	o, _ := parse(e, split("vault-cli help"), w)
-	run(t, o, 0)
+	doTest(t, "core_help", "", "vault-cli help", 0, "Usage:")
 }
 
 func TestCore_Version(t *testing.T) {
-	testName := "core_version"
-	e := makeEnv(testName)
-	cleanCore(e)
-	w := makeStdout(t, wName(testName))
-	defer w.Close()
-	o, _ := parse(e, split("vault-cli version"), w)
-	run(t, o, 0)
+	doTest(t, "core_version", "", "vault-cli version", 0, "version")
 }
 
 func TestCore_Genpw(t *testing.T) {
-	testName := "core_genpw"
-	e := makeEnv(testName)
-	cleanCore(e)
-	w := makeStdout(t, wName(testName))
-	defer w.Close()
-	o, _ := parse(e, split("vault-cli genpw"), w)
-	run(t, o, 0)
+	doTest(t, "core_genpw", "", "vault-cli genpw", 0, "")
 }
 
 func TestCore_Info(t *testing.T) {
-	testName := "core_info"
-	e := makeEnv(testName)
-	cleanCore(e)
-	w := makeStdout(t, wName(testName))
-	defer w.Close()
-	o, _ := parse(e, split("vault-cli info"), w)
-	run(t, o, 0)
+	doTest(t, "core_info", "", "vault-cli info", 0, "init: false")
 }
 
 func TestCore_Init(t *testing.T) {
 	testName := "core_init"
-	e := makeEnv(testName)
-	cleanCore(e)
-
-	{
-		wn := wName(testName + "1")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli info"), w)
-		run(t, o, 0)
-		grepTrue(t, "init: false", wn)
-	}
-
-	{
-		wn := wName(testName + "2")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
-		run(t, o, 0)
-	}
-
-	{
-		wn := wName(testName + "3")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli info"), w)
-		run(t, o, 0)
-		grepTrue(t, "init: true", wn)
-	}
+	doTest(t, testName, "1", "vault-cli info", 0, "init: false")
+	doTest(t, testName, "2", "vault-cli init", 0, "Init vault.")
+	doTest(t, testName, "3", "vault-cli info", 0, "init: true")
 }
 
 func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
-	e := makeEnv(testName)
-	cleanCore(e)
 
-	{
-		wn := wName(testName + "1")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
-		run(t, o, 0)
-		grepTrue(t, "Init vault.", wn)
+	o, wn := doTest(t, testName, "1", "vault-cli init", 0, "Init vault.")
 
-		if !dataDir {
-			// set read only to data dir
-			os.Chmod(o.vaultDir, 0400)
-			defer os.Chmod(o.vaultDir, 0700)
-		}
-		if !logDir {
-			// set read only to log dir
-			os.Chmod(o.logDir, 0400)
-			defer os.Chmod(o.logDir, 0700)
-		}
+	if !dataDir {
+		// set read only to data dir
+		os.Chmod(o.vaultDir, 0400)
+		defer os.Chmod(o.vaultDir, 0700)
+	}
+	if !logDir {
+		// set read only to log dir
+		os.Chmod(o.logDir, 0400)
+		defer os.Chmod(o.logDir, 0700)
 	}
 
 	want := 0
@@ -183,44 +121,14 @@ func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 		t.Logf("want: %v", want)
 	}
 
-	{
-		wn := wName(testName + "2")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli set k1 k1value"), w)
-		run(t, o, want)
+	o, wn = doTest(t, testName, "2", "vault-cli set k1 k1value", want, "")
+	o, wn = doTest(t, testName, "3", "vault-cli get k1", want, "")
+	if want == 0 {
+		grepTrue(t, "k1value", wn)
 	}
 
-	{
-		wn := wName(testName + "3")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli get k1"), w)
-		run(t, o, want)
-		if want == 0 {
-			grepTrue(t, "k1value", wn)
-		}
-	}
-
-	{
-		wn := wName(testName + "4")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli delete k1"), w)
-		run(t, o, want)
-	}
-
-	{
-		wn := wName(testName + "5")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli get k1"), w)
-		run(t, o, 1)
-		if want == 0 {
-			grepTrue(t, "Not found.", wn)
-		}
-	}
-
+	o, wn = doTest(t, testName, "4", "vault-cli delete k1", want, "")
+	o, wn = doTest(t, testName, "5", "vault-cli get k1", 1, "")
 }
 
 func TestCore_SetGetDelete(t *testing.T) {
@@ -240,62 +148,21 @@ func TestCore_SetGetDeleteWithReadOnlyLogDir(t *testing.T) {
 
 func TestCore_PasswordIncorrect(t *testing.T) {
 	testName := "core_password_incorrect"
-	e := makeEnv(testName)
-	cleanCore(e)
 
-	{
-		setDummyPassword("showtpw") // 7 characters
-		wn := wName(testName + "1")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
-		run(t, o, 1)
-		grepTrue(t, "Wrong password.", wn)
-	}
+	setDummyPassword("showtpw") // 7 characters
+	doTest(t, testName, "1", "vault-cli init", 1, "Wrong password.")
 
-	{
-		setInterruptPassword()
-		wn := wName(testName + "2")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
-		run(t, o, 1)
-		grepTrue(t, "Interrupted.", wn)
-	}
+	setInterruptPassword()
+	doTest(t, testName, "2", "vault-cli init", 1, "Interrupted.")
 
-	{
-		setDummyPassword("12345678") // valid password
-		wn := wName(testName + "3")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli init"), w)
-		run(t, o, 0)
-		grepTrue(t, "Init vault.", wn)
-	}
+	setDummyPassword("12345678") // valid password
+	doTest(t, testName, "3", "vault-cli init", 0, "Init vault.")
 
-	{
-		setDummyPassword("1234567890") // incorrect password
-		wn := wName(testName + "4")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli set k1 k1value2"), w)
-		run(t, o, 1)
-		grepTrue(t, "Wrong password.", wn)
-	}
-
+	setDummyPassword("1234567890") // incorrect password
+	doTest(t, testName, "4", "vault-cli set k1 k1value2", 1, "Wrong password.")
 }
 
 func TestCore_UnknownCommand(t *testing.T) {
 	testName := "core_unknown_command"
-	e := makeEnv(testName)
-	cleanCore(e)
-
-	{
-		wn := wName(testName + "1")
-		w := makeStdout(t, wn)
-		defer w.Close()
-		o, _ := parse(e, split("vault-cli unknown-command"), w)
-		run(t, o, 1)
-		grepTrue(t, "Unknown command. Run vault-cli help", wn)
-	}
+	doTest(t, testName, "1", "vault-cli unknown", 1, "Unknown command. Run vault-cli help")
 }

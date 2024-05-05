@@ -1,72 +1,51 @@
 package main
 
 import (
-	"io"
+	"flag" // TODO: To be replaced because the behavior is not good when extra flags are mixed in.
 	"path/filepath"
-	"strings"
+
+	"github.com/tappoy/env"
 )
 
-func getName(nameIndex int, args []string, e env) string {
-	if len(args) > nameIndex {
-		return args[nameIndex]
-	} else if name := e.VaultName; strings.TrimSpace(name) != "" {
-		return strings.TrimSpace(name)
-	} else {
-		return "vault"
+func parse() *option {
+	// get environment variables
+	vaultDir := env.Getenv("VAULT_DIR", "/srv")
+	vaultLogDir := env.Getenv("VAULT_LOG_DIR", "/var/log")
+	vaultName := env.Getenv("VAULT_NAME", "vault")
+
+	// make flag set
+	flagset := flag.NewFlagSet("vault-cli", flag.ContinueOnError)
+	flagset.SetOutput(env.Err)
+
+	// parse flags
+	var n string
+	flagset.StringVar(&n, "n", "", "vault name")
+
+	if flagset.Parse(env.Args[1:]) != nil {
+		return nil
 	}
-}
 
-func getVaultDirRoot(e env) string {
-	if dir := e.VaultDir; dir != "" {
-		return dir
-	} else {
-		return "/srv"
-	}
-}
-
-func getLogDirRoot(e env) string {
-	if dir := e.VaultLogDir; dir != "" {
-		return dir
-	} else {
-		return "/var/log"
-	}
-}
-
-type env struct {
-	VaultDir    string
-	VaultLogDir string
-	VaultName   string
-}
-
-func parse(e env, args []string, w io.Writer) (*option, int) {
-	var name string
+	args := append(env.Args[:1], flagset.Args()...)
 	var command string
-
 	if len(args) < 2 {
 		command = ""
 	} else {
 		command = args[1]
 	}
 
-	switch command {
-	case "init", "info":
-		name = getName(2, args, e)
-	case "set":
-		name = getName(4, args, e)
-	case "get":
-		name = getName(3, args, e)
-	case "delete":
-		name = getName(3, args, e)
-	default:
-		name = "vault"
+	var name string
+	if n != "" {
+		name = n
+	} else {
+		name = vaultName
 	}
 
 	return &option{
 		command:  command,
 		name:     name,
-		vaultDir: filepath.Join(getVaultDirRoot(e), name),
-		logDir:   filepath.Join(getLogDirRoot(e), name),
-		w:        w,
+		vaultDir: filepath.Join(vaultDir, name),
+		logDir:   filepath.Join(vaultLogDir, name),
+		w:        env.Out,
 		args:     args,
-	}, 0
+	}
 }

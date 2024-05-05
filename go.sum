@@ -1,7 +1,9 @@
 github.com/tappoy/crypto v1.2.0 h1:4MtbbINpGr189PwfvAueOOGvPWjc/QkYr0gPYw9nTjI=
 github.com/tappoy/crypto v1.2.0/go.mod h1:bIRaKMbqdSIkJCoei1HW6+HgN2CF2J9pDPhBEUrXZLI=
-github.com/tappoy/logger v1.8.1 h1:tsLETa2A1hgZ+VkW7JE8F/wLZhYWuEULL3Z/Ssc31BM=
-github.com/tappoy/logger v1.8.1/go.mod h1:5XDuyu3l8ktLVFgWyRuNZfbiP5FYe+NyfQJOan0Xvck=
+github.com/tappoy/env v1.2.0 h1:p640WvowJ9VsaRAniS/0eZzaY/iWuj2WAXUxW8SUnbw=
+github.com/tappoy/env v1.2.0/go.mod h1:gBzlgN1LR1GYmpC7q1BDlKmVPhPE1zFODbbgkRmj3GU=
+github.com/tappoy/logger v1.8.2 h1:HOaCS4lyjB2z2qIJadGxzQK7y9upYHsH2Fg14tnAKYQ=
+github.com/tappoy/logger v1.8.2/go.mod h1:5XDuyu3l8ktLVFgWyRuNZfbiP5FYe+NyfQJOan0Xvck=
 github.com/tappoy/pwinput v1.3.0 h1:kCapg1dOfk/71ogJ64D64YxU9R6t8kFczM5jmry4StQ=
 github.com/tappoy/pwinput v1.3.0/go.mod h1:boa4zl7hsQQ6yZvYMNK7oEuGoCY1aQU+hqC5KvATHY0=
 github.com/tappoy/vault v1.5.0 h1:3CNIUulPGimKEvWAq49wrLhoOJdB5gcjB8dauINtYCE=
