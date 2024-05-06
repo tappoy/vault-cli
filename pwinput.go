@@ -1,5 +1,4 @@
-//go:build !test
-
+//go:build !mock
 package main
 
 import (
@@ -9,4 +8,12 @@ import (
 // Normal implementation
 func newPasswordInput() pwinput.PasswordInput {
 	return pwinput.NewPasswordInput()
+}
+
+func setDummyPassword(dummy string) string {
+	return ""
+}
+
+func setInterruptPassword() string {
+	return ""
 }

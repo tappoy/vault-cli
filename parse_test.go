@@ -7,7 +7,7 @@ import (
 )
 
 func want(command, name, vaultDir, logDir string, args []string) *option {
-	return &option{command: command, name: name, vaultDir: vaultDir, logDir: logDir, w: env.Out, args: args}
+	return &option{command: command, name: name, vaultDir: vaultDir, logDir: logDir, args: args}
 }
 
 // TestParse tests the parse function.
