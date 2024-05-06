@@ -29,7 +29,7 @@ $(BIN): lint go.sum $(USAGE)
 	go build -o $(BIN)
 
 test: $(BIN) $(COVER) testlint
-	go test -v -tags=test -vet=all -cover -coverprofile=$(COVER)
+	go test -v -tags=mock -vet=all -cover -coverprofile=$(COVER)
 
 $(COVER0): $(COVER)
 	grep "0$$" $(COVER) | tee > $(COVER0) 2>&1
