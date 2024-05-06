@@ -2,15 +2,13 @@ WORKING_DIRS=tmp
 
 SRC=$(shell find . -name "*.go")
 BIN=tmp/$(shell basename $(CURDIR))
-TESTBIN=tmp/$(shell basename $(CURDIR))-test
 USAGE=Usage.txt
+COVER=tmp/cover
+COVER0=tmp/cover0
 
-FMT=tmp/fmt
-TEST=tmp/cover
+.PHONY: all clean fmt cover test lint testlint
 
-.PHONY: all clean cover test
-
-all: $(WORKING_DIRS) $(FMT) $(BIN) $(TEST)
+all: $(WORKING_DIRS) $(FMT) $(LINT) $(BIN) $(TEST)
 
 clean:
 	rm -rf $(WORKING_DIRS)
@@ -18,23 +16,24 @@ clean:
 $(WORKING_DIRS):
 	mkdir -p $(WORKING_DIRS)
 
-$(FMT): $(SRC)
-	go fmt ./... > $(FMT) 2>&1 || true
+fmt: $(SRC)
+	go fmt
+
+lint: $(SRC)
+	go vet
 
 go.sum: go.mod
 	go mod tidy
 
-$(BIN): $(SRC) go.sum $(USAGE)
+$(BIN): lint go.sum $(USAGE)
 	go build -o $(BIN)
 
-$(TESTBIN): $(BIN)
-	go build -tags test -o $(TESTBIN)
+test: $(BIN) $(COVER) testlint
+	go test -v -tags=test -vet=all -cover -coverprofile=$(COVER)
 
-$(TEST): $(TESTBIN)
-	make test
+$(COVER0): $(COVER)
+	grep "0$$" $(COVER) | tee > $(COVER0) 2>&1
 
-test:
-	go test -v -tags=test -cover -coverprofile=$(TEST) ./...
+cover: $(COVER)
+	go tool cover -html=$(COVER)
 
-cover: $(TEST)
-	grep "0$$" $(TEST) || true
