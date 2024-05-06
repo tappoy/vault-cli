@@ -8,6 +8,10 @@ import (
 //go:embed Usage.txt
 var usage string
 
+func runHelpMessage() {
+	env.Errf("Run %s help\n", env.Args[0])
+}
+
 func main() {
 	// parse arguments
 	o := parse()

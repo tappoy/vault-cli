@@ -1,10 +1,10 @@
 package main
 
 import (
-	"flag" // TODO: To be replaced because the behavior is not good when extra flags are mixed in.
-	"path/filepath"
-
 	"github.com/tappoy/env"
+	"github.com/tappoy/flag"
+
+	"path/filepath"
 )
 
 func parse() *option {
@@ -14,18 +14,24 @@ func parse() *option {
 	vaultName := env.Getenv("VAULT_NAME", "vault")
 
 	// make flag set
-	flagset := flag.NewFlagSet("vault-cli", flag.ContinueOnError)
-	flagset.SetOutput(env.Err)
+	flagset := flag.NewFlagSet(env.Args)
 
 	// parse flags
 	var n string
-	flagset.StringVar(&n, "n", "", "vault name")
+	flagset.StringVar(&n, "n", "")
 
-	if flagset.Parse(env.Args[1:]) != nil {
+	err := flagset.Parse()
+	if err != nil {
+		parseErr := err.(*flag.ParseError)
+		switch parseErr.Err {
+		case flag.ErrInvalidValue:
+			env.Errf("Invalid value for flag %s: %s\n", parseErr.Arg, parseErr.Value)
+		}
+		runHelpMessage()
 		return nil
 	}
 
-	args := append(env.Args[:1], flagset.Args()...)
+	args := flagset.Args()
 	var command string
 	if len(args) < 2 {
 		command = ""

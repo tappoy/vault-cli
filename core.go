@@ -93,7 +93,8 @@ func (o *option) run() int {
 	case "delete":
 		return o.delete()
 	default:
-		fmt.Fprintf(o.w, "Unknown command. Run %s help\n", o.args[0])
+		fmt.Fprintf(o.w, "Unknown command.")
+		runHelpMessage()
 		return 1
 	}
 }

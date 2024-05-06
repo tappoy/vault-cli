@@ -164,5 +164,5 @@ func TestCore_PasswordIncorrect(t *testing.T) {
 
 func TestCore_UnknownCommand(t *testing.T) {
 	testName := "core_unknown_command"
-	doTest(t, testName, "1", "vault-cli unknown", 1, "Unknown command. Run vault-cli help")
+	doTest(t, testName, "1", "vault-cli unknown", 1, "Unknown command.")
 }
