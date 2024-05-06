@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/tappoy/env"
 	"github.com/tappoy/logger"
 	"github.com/tappoy/vault"
 	ver "github.com/tappoy/version"
 
 	"fmt"
-	"io"
 )
 
 type option struct {
@@ -14,21 +14,18 @@ type option struct {
 	name     string
 	vaultDir string
 	logDir   string
-	w        io.Writer
 	args     []string
 }
 
 // input password
 func (o *option) inputPassword(logger *logger.Logger) (string, bool) {
-	fmt.Fprint(o.w, "Password: ")
+	env.Errf("Password: ")
 	pwi := newPasswordInput()
 	password, err := pwi.InputPassword()
-	fmt.Fprintln(o.w)
+	env.Errf("\n")
 	if err != nil {
-		msg := fmt.Sprintf("Cannot get password.\terror:%v", err)
-		logger.Info(msg)
-		fmt.Fprintf(o.w, "%v.", err)
-		fmt.Fprintln(o.w, "Interrupted.")
+		logger.Info(fmt.Sprintf("Cannot get password.\terror:%v", err))
+		env.Errf("Interrupted.")
 		return "", false
 	}
 	return password, true
@@ -49,11 +46,11 @@ func (o *option) createVault(logger *logger.Logger) (*vault.Vault, bool) {
 	switch err {
 	case vault.ErrInvalidPasswordLength, vault.ErrPasswordIncorrect:
 		msg := fmt.Sprintf("Wrong password.")
-		fmt.Fprintln(o.w, msg)
+		env.Errf("%s\n", msg)
 		logger.Notice(msg)
 	default: // TODO: cover. Permission.
 		msg := fmt.Sprintf("Cannot open vault.\terror:%v\tvaultDir:%s", err, o.vaultDir)
-		fmt.Fprintln(o.w, msg)
+		env.Errf("%s\n", msg)
 		logger.Info(msg)
 	}
 	return nil, false
@@ -68,7 +65,7 @@ func (o *option) getKey() string {
 func (o *option) createLogger() *logger.Logger {
 	logger, err := logger.NewLogger(o.logDir)
 	if err != nil { // TODO: cover. Permission.
-		fmt.Fprintf(o.w, "Cannot create logger.\terror:%v\tlogDir:%s\n", err, o.logDir)
+		env.Errf("Cannot create logger.\terror:%v\tlogDir:%s\n", err, o.logDir)
 		return nil
 	}
 	return logger
@@ -93,7 +90,7 @@ func (o *option) run() int {
 	case "delete":
 		return o.delete()
 	default:
-		fmt.Fprintf(o.w, "Unknown command.")
+		env.Errf("Unknown command.\n")
 		runHelpMessage()
 		return 1
 	}
@@ -103,7 +100,7 @@ func (o *option) run() int {
 func (o *option) checkVaultInitialized(v *vault.Vault, logger *logger.Logger) int {
 	if !v.IsInitialized() { // TODO: cover. Permission.
 		msg := fmt.Sprintf("Vault is not initialized.\tvaultDir:%s", o.vaultDir)
-		fmt.Fprintln(o.w, msg)
+		env.Errf("%s\n", msg)
 		logger.Info(msg)
 		return 1
 	} else {
@@ -113,30 +110,30 @@ func (o *option) checkVaultInitialized(v *vault.Vault, logger *logger.Logger) in
 
 // print usage
 func (o *option) usage() int {
-	fmt.Fprintf(o.w, usage)
+	env.Outf(usage)
 	return 0
 }
 
 // print version
 func (o *option) version() int {
-	fmt.Fprintf(o.w, "vault-cli version %s\n", ver.Version())
+	env.Outf("vault-cli version %s\n", ver.Version())
 	return 0
 }
 
 // print random password
 func (o *option) generatePassword() int {
 	password := vault.GeneratePassword()
-	fmt.Fprintln(o.w, password)
+	env.Outf(password)
 	return 0
 }
 
 // print vault info
 func (o *option) info() int {
-	fmt.Fprintln(o.w, "[Vault Info]")
-	fmt.Fprintln(o.w, "  name:", o.name)
-	fmt.Fprintln(o.w, "  data:", o.vaultDir)
-	fmt.Fprintln(o.w, "  log :", o.logDir)
-	fmt.Fprintln(o.w, "  init:", vault.IsInitialized(o.vaultDir))
+	env.Outf("[Vault Info]\n")
+	env.Outf("  name: %v\n", o.name)
+	env.Outf("  data: %v\n", o.vaultDir)
+	env.Outf("  log : %v\n", o.logDir)
+	env.Outf("  init: %v\n", vault.IsInitialized(o.vaultDir))
 	return 0
 }
 
@@ -154,13 +151,13 @@ func (o *option) init() int {
 	err := v.Init()
 	if err != nil { // TODO: cover
 		msg := fmt.Sprintf("Cannot init vault.\terror:%v\tvaultDir:%s", err, o.vaultDir)
-		fmt.Fprintln(o.w, msg)
+		env.Errf("%s\n", msg)
 		logger.Notice(msg)
 		return 1
 	}
 
 	msg := fmt.Sprintf("Init vault.\tvaultDir:%s", o.vaultDir)
-	fmt.Fprintln(o.w, msg)
+	env.Outf(msg)
 	logger.Notice(msg)
 	return 0
 }
@@ -191,14 +188,14 @@ func (o *option) set() int {
 
 	if err := v.Set(key, value); err != nil { // TODO: cover. Never happen?
 		msg := fmt.Sprintf("Cannot set.\tkey:%s\terror:%v", key, err)
-		fmt.Fprintln(o.w, msg)
+		env.Errf("%s\n", msg)
 		logger.Info(msg)
 		return 1
 	}
 
 	msg := fmt.Sprintf("set\tkey:%s", key)
 	logger.Info(msg)
-	fmt.Fprintln(o.w, "Set successfully.")
+	env.Outf("Set successfully.\n")
 	return 0
 }
 
@@ -223,12 +220,12 @@ func (o *option) get() int {
 	if err != nil {
 		switch err {
 		case vault.ErrKeyNotFound:
-			msg := fmt.Sprintf("Not found.\tkey:%s", key)
-			fmt.Fprintln(o.w, msg)
+			msg := fmt.Sprintf("Not found.\tkey:%s\n", key)
+			env.Errf("%s\n", msg)
 			logger.Info(msg)
 		default: // TODO: cover. Never happen?
 			msg := fmt.Sprintf("Cannot get.\tkey:%s error:%v", key, err)
-			fmt.Fprintln(o.w, msg)
+			env.Errf("%s\n", msg)
 			logger.Info(msg)
 		}
 		return 1
@@ -236,7 +233,7 @@ func (o *option) get() int {
 
 	msg := fmt.Sprintf("get\tkey:%s", key)
 	logger.Info(msg)
-	fmt.Fprintln(o.w, value)
+	env.Outf("%s\n", value)
 	return 0
 }
 
@@ -261,11 +258,11 @@ func (o *option) delete() int {
 		switch err {
 		case vault.ErrKeyNotFound: // TODO: cover
 			msg := fmt.Sprintf("Not found.\tkey:%s", key)
-			fmt.Fprintln(o.w, msg)
+			env.Errf("%s\n", msg)
 			logger.Info(msg)
 		default: // TODO: cover. Never happen?
 			msg := fmt.Sprintf("Cannot delete.\tkey:%s error:%v", key, err)
-			fmt.Fprintln(o.w, msg)
+			env.Errf("%s\n", msg)
 			logger.Info(msg)
 		}
 		return 1 // TODO: cover
@@ -273,6 +270,6 @@ func (o *option) delete() int {
 
 	msg := fmt.Sprintf("delete\tkey:%s", key)
 	logger.Info(msg)
-	fmt.Fprintf(o.w, "%s is deleted.\n", key)
+	env.Outf("%s is deleted.\n", key)
 	return 0
 }
