@@ -8,7 +8,7 @@ COVER0=tmp/cover0
 
 .PHONY: all clean fmt cover test lint testlint
 
-all: $(WORKING_DIRS) $(FMT) $(LINT) $(BIN) $(TEST)
+all: $(WORKING_DIRS) $(FMT) $(BIN) test
 
 clean:
 	rm -rf $(WORKING_DIRS)
@@ -28,7 +28,7 @@ go.sum: go.mod
 $(BIN): lint go.sum $(USAGE)
 	go build -o $(BIN)
 
-test: $(BIN) $(COVER) testlint
+test: $(BIN) $(COVER)
 	go test -v -tags=mock -vet=all -cover -coverprofile=$(COVER)
 
 $(COVER0): $(COVER)
