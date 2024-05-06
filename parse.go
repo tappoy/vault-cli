@@ -51,7 +51,6 @@ func parse() *option {
 		name:     name,
 		vaultDir: filepath.Join(vaultDir, name),
 		logDir:   filepath.Join(vaultLogDir, name),
-		w:        env.Out,
 		args:     args,
 	}
 }
