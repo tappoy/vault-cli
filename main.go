@@ -8,6 +8,12 @@ import (
 //go:embed Usage.txt
 var usage string
 
+var (
+	VaultDir    = "/srv"
+	VaultLogDir = "/var/log"
+	VaultName   = "vault"
+)
+
 func runHelpMessage() {
 	env.Errf("Run %s help\n", env.Args[0])
 }

@@ -9,12 +9,10 @@ import (
 	"testing"
 )
 
-func setEnv(name string) {
-	env.DummyEnv = env.Env{
-		"VAULT_DIR":     testRoot + "/core/data",
-		"VAULT_LOG_DIR": testRoot + "/core/log",
-		"VAULT_NAME":    name,
-	}
+func setGlobal(name string) {
+	VaultDir = testRoot + "/core/data"
+	VaultLogDir = testRoot + "/core/log"
+	VaultName = name
 }
 
 func wName(name string) string {
@@ -77,7 +75,7 @@ func doTest(t *testing.T, testName, wsuffix, args string, want int, search, sear
 	wn := wName(testName + wsuffix)
 	we := wNameErr(testName + wsuffix)
 	setStdout(t, wn, we)
-	setEnv(testName)
+	setGlobal(testName)
 	env.Args = split(args)
 	o := parse()
 	run(t, o, want)
