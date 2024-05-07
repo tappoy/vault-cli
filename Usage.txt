@@ -1,5 +1,5 @@
 Usage:
-$ vault-cli [-n <name>] <command>
+$ vault-cli <command> [arguments...]
 
 Commands:
   help               Show this help
@@ -11,18 +11,9 @@ Commands:
   genpw              Generate a random password
   version            Show version
 
-Flags:
-  -n <name>  The name of the vault.
-
 You must give a password through the prompt when init, set, get and delete.
 The password must be 8 to 32 characters.
 
-Environment variables:
-  VAULT_DIR      The root directory of the vault. Default is "/srv".
-  VAULT_LOG_DIR  The root directory of the log. Default is "/var/log".
-  VAULT_NAME     The name of the vault. Default is "vault".
-                 It will be used when the name argument is not given.
-
-By default:
-  Vault data dir: /srv/<name>
-  Log data dir:   /var/log/<name>
+Paths:
+  Data: /srv/vault
+  Log:  /var/log/vault

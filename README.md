@@ -42,7 +42,8 @@ sudo chgrp applications /srv
 sudo chmod 775 /srv
 ```
 
-
+# Why it is this way.
+See [Philosophy](https://github.com/tappoy/philosophy) for more details.
 
 # License
 [GPL-3.0](LICENSE)
