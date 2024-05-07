@@ -1,12 +1,13 @@
-WORKING_DIRS=tmp
+PACKAGE=github.com/tappoy/vault-cli
+WORKING_DIRS=tmp bin
 
 SRC=$(shell find . -name "*.go")
-BIN=tmp/$(shell basename $(CURDIR))
+BIN=bin/$(shell basename $(CURDIR))
 USAGE=Usage.txt
 COVER=tmp/cover
 COVER0=tmp/cover0
 
-.PHONY: all clean fmt cover test lint testlint
+.PHONY: all clean fmt cover test lint
 
 all: $(WORKING_DIRS) $(FMT) $(BIN) test lint
 
@@ -28,11 +29,8 @@ $(BIN): go.sum $(USAGE)
 test: $(BIN)
 	go test -v -tags=mock -vet=all -cover -coverprofile=$(COVER)
 
-$(COVER0): $(COVER)
-	grep "0$$" $(COVER) | tee > $(COVER0) 2>&1
-
 cover: $(COVER)
-	go tool cover -html=$(COVER)
+	grep "0$$" $(COVER) | sed 's!$(PACKAGE)!.!' | tee $(COVER0)
 
 lint: $(BIN)
 	go vet
