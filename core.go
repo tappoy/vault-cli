@@ -44,7 +44,11 @@ func (o *option) createVault(logger *logger.Logger) (*vault.Vault, bool) {
 	}
 
 	switch err {
-	case vault.ErrInvalidPasswordLength, vault.ErrPasswordIncorrect:
+	case vault.ErrInvalidPasswordLength:
+		msg := fmt.Sprintf("The password must be 8 to 32 characters.")
+		env.Errf("%s\n", msg)
+		logger.Notice(msg)
+	case vault.ErrPasswordIncorrect:
 		msg := fmt.Sprintf("Wrong password.")
 		env.Errf("%s\n", msg)
 		logger.Notice(msg)

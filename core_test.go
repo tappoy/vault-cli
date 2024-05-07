@@ -170,7 +170,7 @@ func TestCore_PasswordIncorrect(t *testing.T) {
 	testName := "core_password_incorrect"
 
 	setDummyPassword("showtpw") // 7 characters
-	doTest(t, testName, "1", "vault-cli init", 1, "", "Wrong password.")
+	doTest(t, testName, "1", "vault-cli init", 1, "", "The password must be 8 to 32 characters.")
 
 	setInterruptPassword()
 	doTest(t, testName, "2", "vault-cli init", 1, "", "Interrupted.")
