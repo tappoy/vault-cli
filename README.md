@@ -32,12 +32,12 @@ sudo usermod -aG applications vault
 sudo usermod -aG syslog vault
 ```
 
-5. Change the gorup of the default vault directory.
+5. Change the gorup of the vault directory.
 ```bash
 sudo chgrp applications /srv
 ```
 
-6. Change mode of the default vault directory.
+6. Change mode of the vault directory.
 ```bash
 sudo chmod 775 /srv
 ```
