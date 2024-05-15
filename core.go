@@ -20,8 +20,7 @@ type option struct {
 // input password
 func (o *option) inputPassword(logger *logger.Logger) (string, bool) {
 	env.Errf("Password: ")
-	pwi := newPasswordInput()
-	password, err := pwi.InputPassword()
+	password, err := env.InputPassword()
 	env.Errf("\n")
 	if err != nil {
 		logger.Info(fmt.Sprintf("Cannot get password.\terror:%v", err))
