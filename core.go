@@ -7,6 +7,7 @@ import (
 	ver "github.com/tappoy/version"
 
 	"fmt"
+	"os"
 )
 
 type option struct {
@@ -88,6 +89,8 @@ func (o *option) run() int {
 		return o.init()
 	case "set":
 		return o.set()
+	case "read":
+		return o.read()
 	case "get":
 		return o.get()
 	case "delete":
@@ -199,6 +202,52 @@ func (o *option) set() int {
 	msg := fmt.Sprintf("set\tkey:%s", key)
 	logger.Info(msg)
 	env.Outf("Set successfully.\n")
+	return 0
+}
+
+func (o *option) read() int {
+	logger := o.createLogger()
+	if logger == nil {
+		return 1
+	}
+
+	v, ok := o.createVault(logger)
+	if !ok {
+		return 1
+	}
+
+	if o.checkVaultInitialized(v, logger) != 0 {
+		return 1
+	}
+
+	key := o.getKey()
+
+	var file string
+	if len(o.args) >= 4 {
+		file = o.args[3]
+	} else { // TODO: cover. No set file.
+		file = ""
+	}
+
+	bytes, err := os.ReadFile(file)
+	if err != nil {
+		msg := fmt.Sprintf("Cannot read file.\tfile:%s\terror:%v", file, err)
+		env.Errf("%s\n", msg)
+		logger.Info(msg)
+		return 1
+	}
+
+	value := string(bytes)
+	if err := v.Set(key, value); err != nil { // TODO: cover. Never happen?
+		msg := fmt.Sprintf("Cannot set.\tkey:%s\terror:%v", key, err)
+		env.Errf("%s\n", msg)
+		logger.Info(msg)
+		return 1
+	}
+
+	msg := fmt.Sprintf("read\tkey:%s", key)
+	logger.Info(msg)
+	env.Outf("Read successfully.\n")
 	return 0
 }
 

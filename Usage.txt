@@ -5,6 +5,7 @@ Commands:
   help               Show this help
   init               Initialize a new vault
   set <key> <value>  Set a key-value pair
+  read <key> <file>  Read a file as a value
   get <key>          Get a value by key
   delete <key>       Delete a key-value pair
   info               Show information of the vault

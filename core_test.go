@@ -116,6 +116,15 @@ func TestCore_Init(t *testing.T) {
 	doTest(t, testName, "3", "vault-cli info", 0, "init: true", "")
 }
 
+func TestCore_Read(t *testing.T) {
+	env.SetDummyPassword("dummyPassword")
+	testName := "core_read"
+	os.WriteFile(testRoot+"/backup1", []byte("backup1\nuser\tjon\npass\tdoe\n"), 0644)
+	doTest(t, testName, "1", "vault-cli init", 0, "Init vault.", "")
+	doTest(t, testName, "2", "vault-cli read backup1 "+testRoot+"/backup1", 0, "Read successfully.", "")
+	doTest(t, testName, "3", "vault-cli get backup1", 0, "pass\tdoe", "")
+}
+
 func setGetDelete(t *testing.T, testName string, dataDir bool, logDir bool) {
 
 	o, wn, we := doTest(t, testName, "1", "vault-cli init", 0, "Init vault.", "")
